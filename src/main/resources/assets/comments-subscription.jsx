@@ -65,7 +65,7 @@ var Index = React.createClass({
     handleSubmit: function(e) {
         e.preventDefault();
         stallion.request({
-            url: '/_stx/simpleBlog/comments/update-comment-subscriptions?commentId=' + this.state.comment.id,
+            url: '/_stx/flatBlog/comments/update-comment-subscriptions?commentId=' + this.state.comment.id,
             method: 'POST',
             form: e.target,
             data: this.state.subscriptionInfo,

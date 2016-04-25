@@ -1,3 +1,3 @@
-//=resource:simpleBlog|dashboard.js
-//=resource:simpleBlog|dashboard.jsx?processor=react-jsx
+//=resource:flatBlog|dashboard.js
+//=resource:flatBlog|dashboard.jsx?processor=react-jsx
 

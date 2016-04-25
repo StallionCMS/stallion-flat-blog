@@ -14,7 +14,7 @@ var CommentsTable = React.createClass({
     deleteComment: function(comment, b, c) {
         var self = this;
         stallion.request({
-            url: '/_stx/simpleBlog/comments/' + comment.id + '/delete',
+            url: '/_stx/flatBlog/comments/' + comment.id + '/delete',
             method: 'POST',
             success: function() {
                 comment.deleted = true;
@@ -28,7 +28,7 @@ var CommentsTable = React.createClass({
     approveComment: function(comment, b, c) {
         var self = this;
         stallion.request({
-            url: '/_stx/simpleBlog/comments/' + comment.id + '/restore-and-approve',
+            url: '/_stx/flatBlog/comments/' + comment.id + '/restore-and-approve',
             method: 'POST',
             success: function() {
                 comment.deleted = false;
@@ -128,7 +128,7 @@ var Index = React.createClass({
     loadComments: function() {
         var self = this;
         this.setState({isLoading: true});
-        var url = '/_stx/simpleBlog/comments/dashboard.json';
+        var url = '/_stx/flatBlog/comments/dashboard.json';
         if (this.props.includeDeleted) {
             url += "?deleted=true";
         }

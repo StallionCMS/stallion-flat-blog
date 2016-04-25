@@ -53,7 +53,7 @@
 
     plugin.approve = function(commentId) {
         stallion.request({
-            url: '/_stx/simpleBlog/comments/' + commentId + '/restore-and-approve',
+            url: '/_stx/flatBlog/comments/' + commentId + '/restore-and-approve',
             method: 'POST',
             success: function() {
                 $cmt.addClass('st-comment-approved').removeClass('st-comment-pending').removeClass('st-comment-rejected');
@@ -64,7 +64,7 @@
 
     plugin.reject = function(commentId) {
         stallion.request({
-            url: '/_stx/simpleBlog/comments/' + commentId + '/delete',
+            url: '/_stx/flatBlog/comments/' + commentId + '/delete',
             method: 'POST',
             success: function() {
                 $cmt.addClass('st-comment-rejected').removeClass('st-comment-pending').removeClass('st-comment-approved');
@@ -142,10 +142,10 @@
         
         console.log('data', data);
 
-        var url = '/_stx/simpleBlog/comments/submit';
+        var url = '/_stx/flatBlog/comments/submit';
         var isEdit = false;
         if (data.editingCommentId) {
-            url = '/_stx/simpleBlog/comments/' + data.editingCommentId + '/revise';
+            url = '/_stx/flatBlog/comments/' + data.editingCommentId + '/revise';
             isEdit = true;
         }
         data.captchaResponse = data['g-recaptcha-response'];

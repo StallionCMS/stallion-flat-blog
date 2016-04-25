@@ -23,7 +23,7 @@
         };
         submission.email = submission.data.email;
 
-        var url = '/_stx/simpleBlog/contacts/submit-form';
+        var url = '/_stx/flatBlog/contacts/submit-form';
 
         stallion.request({
             url: url,

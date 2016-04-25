@@ -6,7 +6,7 @@ var SubscriptionsTable = React.createClass({
     subscribe: function(subscription) {
         var self = this;
         stallion.request({
-            url: '/_stx/simpleBlog/contacts/subscribe',
+            url: '/_stx/flatBlog/contacts/subscribe',
             method: 'POST',
             data: {
                 subscriptionId: subscription.id,
@@ -22,7 +22,7 @@ var SubscriptionsTable = React.createClass({
     unsubscribe: function(subscription) {
         var self = this;
         stallion.request({
-            url: '/_stx/simpleBlog/contacts/unsubscribe',
+            url: '/_stx/flatBlog/contacts/unsubscribe',
             method: 'POST',
             data: {
                 subscriptionId: subscription.id,
