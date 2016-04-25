@@ -1,0 +1,9 @@
+<h5>{{ subject }}</h5>
+{% for result in results %}
+  <div class="notification-bodyHtml">
+      {{ result.emailBody }}
+  </div>
+{% endfor %}
+<hr>
+Want fewer emails? <a href="{{ site.url }}/_stx/contacts/my-subscriptions/{{ contact.secretToken }}">Manage your subscriptions or unsubscribe</a>
+

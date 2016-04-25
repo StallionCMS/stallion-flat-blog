@@ -1,0 +1,16 @@
+
+.st-comment-form .st-field {
+    margin-bottom: 1em;
+}
+.st-comment-form .st-field label {
+    display: block;
+    margin-bottom: .5em;
+}
+.st-comment-form .st-field textarea, .st-comment-form .st-field input[type="text"], .st-comment-form .st-field input[type="email"] {
+    width: 100%;
+    max-width: 400px;
+    padding: .25em;
+}
+
+  
+

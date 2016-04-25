@@ -1,0 +1,49 @@
+
+
+
+
+.st-comments-table tbody.comment-row-group:nth-child(even) {background: #EEE}
+.st-comments-table tbody.comment-row-group:nth-child(odd) {background: #FFF}
+
+.st-comments-table  {
+    border-spacing: 0;
+    border-collapse: collapse;
+    width: 100%;
+    max-width: 1000px;
+}
+.st-comments-table tr { border-width: 0px; }
+.st-comments-table td { border-width: 0px; }
+.st-comments-table.table>tbody>tr>td { border-top-width: 0px; }
+
+.st-row-group .row-action-buttons {
+    opacity: .0;
+}
+.st-row-group:hover .row-action-buttons {
+    opacity: 1;
+}
+
+.comment-date-column {
+    width: 110px;
+}
+
+.comments-reply-post-title {
+    color: #777;
+    margin-bottom: 1em;    
+}
+
+.st-comments-table .comments-body {
+    max-height: 200px;
+    max-width: 600px;
+    overflow-y: scroll;
+}
+
+.st-comments-table ::-webkit-scrollbar {
+   -webkit-appearance: none;
+   width: 7px;
+}
+
+.st-comments-table ::-webkit-scrollbar-thumb {
+   border-radius: 4px;
+   background-color: rgba(0,0,0,.5);
+   -webkit-box-shadow: 0 0 1px rgba(255,255,255,.5);
+}

@@ -1,0 +1,7 @@
+<h1>Verify the following email subscriptions:</h1>
+{% for subscription in subscriptions %}
+<h3>{{ subscription.name }}</h3>
+{% endfor %}
+
+<a href="{{ site.url }}/_stx/contacts/verify-subscribe/{{ contact.secretToken }}">Yes, I want these emails</a>
+<a href="{{ site.url }}/_stx/contacts/decline-subscribe/{{ contact.secretToken }}">No, opt out</a>

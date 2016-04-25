@@ -1,0 +1,10 @@
+
+notifyEmails = ["pat+stallion@pfitz.net"]
+commentsClosedAfterDays = 23
+
+moderatorEmails = ["pat+stallion@pfitz.net"]
+
+
+[[blogs]]
+rootUrl = "/"
+folder = "my_posts"

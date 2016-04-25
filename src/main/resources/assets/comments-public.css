@@ -1,0 +1,129 @@
+
+.st-comments .st-comment {
+    border-top: 1px solid #E9E9E9;
+    padding-top: 1em;
+    margin-bottom: 2em;
+}
+.st-comments .st-comment-byline {
+    font-size: .8em;
+    font-weight: 300;
+    color: #999;
+    margin-bottom: 1em;
+}
+.st-comments .st-comment-actions {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+.st-comments .st-new-comment {
+    background-color: #FFF9CC;
+    transition: background-color 3s ease;    
+}
+.st-comment-not-visible {
+    display: none;
+} 
+
+.st-approved-actions, .st-pending-actions, .st-rejected-actions {
+    display: none;
+}
+
+.st-comment.st-comment-approved .st-approved-actions {
+    display: block;
+}
+
+.st-comment.st-comment-pending .st-pending-actions {
+    display: block;
+}
+
+.st-comment.st-comment-rejected .st-rejected-actions {
+    display: block;
+}
+
+.st-comment.st-comment-rejected .st-comment-body,
+.st-comment.st-comment-rejected .st-comment-byline {
+
+}
+.st-comment.st-comment-rejected .st-comment-not-visible,
+.st-comment.st-comment-pending .st-comment-not-visible
+ {
+     display: block;
+     margin-top: -1em;
+     margin-bottom:1em;
+     padding: .5em;
+     width: 100%;
+     background-color: #999;
+     color: #F9F9F9;
+ }
+.st-comment.st-comment-rejected,
+.st-comment.st-comment-pending
+ {
+     background-color: #FEE;
+}
+.st-comment.st-comment-rejected {
+    color: #CCCCCC;
+
+}
+
+.st-comment-form .hidden-at-first {
+    display:none;
+}
+
+
+
+
+.st-comment-author-avatar.st-letter-avatar {
+    width: 40px;
+    height: 40px;
+    color: #F9F9F9;
+    text-align: center;
+    padding-top: 8px;
+    font-size: 24px;
+    font-weight: 300;
+    font-family: "helvetica neue", Helvetica, Arial;
+    float: left;
+    margin-right: 0px;
+    font-smooth:always;
+
+}
+.st-comment-main {
+    margin-left: 55px;
+}
+
+
+.st-manage-subscriptions-link {
+    font-size: .7em;
+}    
+
+
+/* Sample */
+
+.dropdown-menu {
+    border: 1px solid #ddd;
+    background-color: white;
+}
+
+.dropdown-menu li {
+    border-top: 1px solid #ddd;
+    padding: 2px 5px;
+}
+
+.dropdown-menu li:first-child {
+    border-top: none;
+}
+
+.dropdown-menu li:hover,
+.dropdown-menu .active {
+    background-color: #B2A599;
+}
+
+
+/* SHOULD not modify */
+
+.dropdown-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.dropdown-menu a:hover {
+    cursor: pointer;
+}

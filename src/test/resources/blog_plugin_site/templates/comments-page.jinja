@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A layout example that shows off a blog page with a list of posts.">
+    <title>Blog &ndash; Layout Examples &ndash; Pure</title>
+    {{ assets.bundle("site.head.bundle.css") }}
+</head>
+<body>
+<div id="layout" class="pure-g">
+    <div class="sidebar pure-u-1 pure-u-md-1-4">
+        <div class="header">
+            <h1 class="brand-title">A Sample Blog</h1>
+            <h2 class="brand-tagline">A blog layout using Pure and Stallion</h2>
+
+            <nav class="nav">
+                <ul class="nav-list">
+                    <li class="nav-item">
+                        <a class="pure-button" href="javascript:;">Noop</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="pure-button" href="javascript:;">Does nothing</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <div class="content pure-u-1 pure-u-md-3-4">
+        <div>
+            <!-- A wrapper for all the flatBlog posts -->
+            <div class="posts">
+                <h1 class="content-subhead">Pinned Post</h1>
+
+                <!-- A single flatBlog post -->
+                <section class="post">
+                    <header class="post-header">
+                        <h2 class="post-title">Introducing Awesome Comments</h2>
+                        <p class="post-meta">
+                            By <a href="#" class="post-author">Awesome</a> under <a class="post-category post-category-design" href="#">Commenting</a> <a class="post-category post-category-pure" href="#">Stuff</a>
+                        </p>
+                    </header>
+
+                    <div class="post-description">
+                        <p>As I watched, the planet seemed to grow larger and smaller and to advance and recede, but that was simply that my eye was tired.  Forty millions of miles it was from us--more than forty millions of miles of void.  Few people realise the immensity of vacancy in which the dust of the material universe swims.</p>
+
+<p>Near it in the field, I remember, were three faint points of light, three telescopic stars infinitely remote, and all around it was the unfathomable darkness of empty space.  You know how that blackness looks on a frosty starlight night.  In a telescope it seems far profounder.  And invisible to me because it was so remote and small, flying swiftly and steadily towards me across that incredible distance, drawing nearer every minute by so many thousands of miles, came the Thing they were sending us, the Thing that was to bring so much struggle and calamity and death to the earth.  I never dreamed of it then as I watched; no one on earth dreamed of that unerring missile.</p>
+
+<p>That night, too, there was another jetting out of gas from the distant planet.  I saw it.  A reddish flash at the edge, the slightest projection of the outline just as the chronometer struck midnight; and at that I told Ogilvy and he took my place.  The night was warm and I was thirsty, and I went stretching my legs clumsily and feeling my way in the darkness, to the little table where the siphon stood, while Ogilvy exclaimed at the streamer of gas that came out towards us.</p>
+                    </div>
+                </section>
+            </div><!--end posts-->
+            <div class="commenting">
+              {{ commenting.renderComments(page.compoundId) }}
+              {{ commenting.renderForm(page.compoundId, page.permalink, page.title) }}
+            </div>
+            
+        </div><!--end content-->
+        
+            <div class="footer">
+                <div class="pure-menu pure-menu-horizontal pure-menu-open">
+                    <ul>
+                        <li><a href="#">About</a></li>
+                        <li><a href="#">Twitter</a></li>
+                        <li><a href="#">GitHub</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
+{{ assets.bundle("site.footer.bundle.js") }}
+</body>
+</html>
+

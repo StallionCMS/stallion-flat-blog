@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ page.title }}</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Lato Google Font - For Theme -->
+    <link href='http://fonts.googleapis.com/css?family=Lato:100,200,300,400,700' rel='stylesheet' type='text/css'>
+    {{ assets.bundle("site.bundle.css") }}
+</head>
+<body>
+{% block "main_content" %}
+{% endblock %}
+{{ assets.bundle("site.bundle.js") }}
+<!-- IE Input Placeholder Fix -->
+<script type="text/javascript">$(function(){$('input, textarea').placeholder();});</script>
+</body>
+</html>

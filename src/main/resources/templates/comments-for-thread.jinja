@@ -1,0 +1,48 @@
+<div class="st-comments st-comments-for-{{ commentThreadIdSlug }}">
+  {% if threadComments.count() > 0 %}
+    <h3 class="comments-header above-comments">Comments</h3>
+  {% endif %}
+  {% for comment in threadComments %}
+      <div riot-tag="comment" class="st-comment-{{ comment.id }}">
+        <hr>
+      <div class="st-comment-byline">
+        {% if comment.authorWebSite %}
+        <a href="{{ comment.authorWebSite }}" rel="nofollow">{{ comment.authorDisplayName }}</a>
+        {% else %}
+        {{ comment.authorDisplayName }}
+        {% endif %}
+        commented at {{ utils.formatLocalDate(comment.createdTicks, "MMMM d, YYYY h:mm a") }}</div>
+      <div class="st-comment-body">{{ comment.bodyHtml }}</div>
+    </div><!--end comment-->
+  {% endfor %}
+  <div class="new-comment-wrapper">
+    <div id="new-comments-riot-target" riot-tag="comments-dynamic"></div><!--end new-comments-->
+  </div>
+</div>
+<script type="text/javascript">
+(function() {
+  window.stallion_comments_context_comments = [];
+  window.st_comments_current_page_comments = {};
+  {% for comment in threadComments %}
+  var staff = {{ user.staff|default("false") }};
+  var editable = {{ comment.editable }};
+  {% if comment.editable %} //EDITABLE {% endif %}
+    {% if user.staff %}
+      var comment = {{ utils.htmlSafeJson(comment, 'owner') }}
+      comment.editable = true;
+      comment.adminable = true;
+    {% endif %}
+    {% if comment.editable and not user.staff %}
+      var comment = {{ utils.htmlSafeJson(comment, 'owner') }}
+      comment.editable = true;
+    {% else %}
+      var comment = {{ utils.htmlSafeJson(comment, 'public') }};
+      comment.isApproved = true;
+    {% endif %}
+
+    stallion_comments_context_comments.push(comment);
+    window.st_comments_current_page_comments[comment.id] = comment;
+  {% endfor %}
+
+}());
+</script>

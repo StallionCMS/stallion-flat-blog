@@ -1,0 +1,6 @@
+Contact me!
+=================================
+slug:/contact-me
+template:contact-page.jinja
+
+### Please give me your message and contact me!

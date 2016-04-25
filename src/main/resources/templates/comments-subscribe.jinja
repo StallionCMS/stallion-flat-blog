@@ -1,0 +1,31 @@
+{% extends "stallion:admin/base-scaffold.jinja" %}
+{% block extra_head %}
+<link href="/_stx/comments/assets/comments-subscription.css" rel="stylesheet" />
+{% endblock %}
+{% block body_content %}
+<div id="st-comments-dashboard-content" class="container">
+  <div class="row">
+    <div class="col-md-2">
+    </div>
+    <div class="col-md-8">
+      <div id="table-wrap"></div>
+    </div>
+    <div class="col-md-2">
+    </div>
+  </div><!--end row-->
+</div>
+<script type="text/javascript">
+  var commentsSubscribeContext = {
+      contact: {{ utils.htmlSafeJson(contact, "owner") }},
+      comment: {{ utils.htmlSafeJson(comment, "owner") }},
+      subscriptionInfo: {{ utils.htmlSafeJson(subscriptionInfo, "owner") }}
+  };
+
+
+</script>
+{% endblock %}
+
+{% block pre_end_body %}
+<script type="text/jsx" src="/_stx/comments/assets/comments-subscription.jsx")></script>
+{% endblock %}
+

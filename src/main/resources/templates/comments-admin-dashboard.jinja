@@ -1,0 +1,26 @@
+{% extends "stallion:admin/base.jinja" %}
+{% block extra_head %}
+<link href="/_stx/comments/assets/dashboard.css" rel="stylesheet" />
+{% endblock %}
+{% block main_column %}
+<div id="st-comments-dashboard-content" class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h1>Comments</h1>
+            <div id="example"></div>
+            <div id="table-wrap"></div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block pre_end_body %}
+<script type="text/jsx" src="/_stx/comments/assets/dashboard.jsx")></script>
+{% endblock %}
+
+
+
+
+
+

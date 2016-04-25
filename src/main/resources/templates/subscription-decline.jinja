@@ -1,0 +1,6 @@
+<h1>You have declined the following subscriptions</h1>
+{% for subscription in subscriptions %}
+<h3>{{ subscription.name }}</h3>
+{% endfor %}
+<p></p>
+<p>If this was a mistake, or you want to edit your subscriptions, <a href="">you can manage your subscriptions here.</a></p>
