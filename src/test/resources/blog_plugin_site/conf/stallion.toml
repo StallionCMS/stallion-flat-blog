@@ -1,10 +1,4 @@
+
 siteName="The Simple Blog Site"
-
-
-
-[email]
-host = "smtp.gmail.com"
-username = "patrice.fitzhugh"
-password = "wI8hIdHv0ds5IZYl"
-outboundEmailTestAddress = "pat+stallion@pfitz.net"
+siteUrl="http://localhost:8090"
 

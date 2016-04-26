@@ -6,5 +6,5 @@ moderatorEmails = ["pat+stallion@pfitz.net"]
 
 
 [[blogs]]
-rootUrl = "/"
+rootUrl = "/blog"
 folder = "my_posts"

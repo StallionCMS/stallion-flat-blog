@@ -1,14 +1,20 @@
 {% extends "/base.jinja" %}
-{% block main_content %}
-<section class="post">
-    <h1 class="post-title"><a href="{{ post.slug }}">{{ post.title }}</a></h1>
-    <div class="post-byline">{% if post.author %}by {{ post.author }} at{% endif %} {{ utils.formatLocalDate(post.publishDate) }}</div>
-    <div class="post-bodyHtml">
-        {{ post.content }}
-    </div><!--/post-bodyHtml-->
-</section>
-<div class="commenting">
+{% block main_body %}
+<div class="posts">
+  <section class="post">
+    <header class="post-header">
+      <h2 class="post-title">{{ page.title }}</h2>
+      <p class="post-meta">
+        By <a class="post-author" href="#">{{ page.author }}</a> {% if page.tags %}under {% for tag in tags %}fd <a class="post-category" href="#">{{ tag }}</a>{% endfor %}{% endif %}
+      </p>      
+    </header>
+    <div class="post-description">
+      {{ page.content }}
+    </div>
+  </section>
+  <div class="commenting">
     {{ commenting.renderComments(post.compoundId) }}
     {{ commenting.renderForm(post.compoundId, post.permalink, post.title) }}
+  </div>
 </div>
 {% endblock %}

@@ -1,19 +1,44 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>{{ page.title }}</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% extends "stallion:common-base.jinja" %}
+{% block body_content %}
+<div id="layout" class="pure-g">
+  <div class="sidebar pure-u-1 pure-u-md-1-4">
+    <div class="header">
+      <h1 class="brand-title">{{ site.name }}</h1>
+      <h2 class="brand-tagline">{{ site.metaDescription }}</h2>
 
-    <!-- Lato Google Font - For Theme -->
-    <link href='http://fonts.googleapis.com/css?family=Lato:100,200,300,400,700' rel='stylesheet' type='text/css'>
-    {{ assets.bundle("site.bundle.css") }}
-</head>
-<body>
-{% block "main_content" %}
+      <nav class="nav">
+        <ul class="nav-list">
+          <li class="nav-item">
+            <a class="pure-button" href="/">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="pure-button" href="/blog">Blog</a>
+          </li>
+          <li class="nav-item">
+            <a class="pure-button" href="/contact-us">Contact</a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </div><!--end sidebar -->
+
+  <div class="content pure-u-1 pure-u-md-3-4">
+    <div>
+      {% block main_body %}
+      {% endblock %}
+      <div class="footer">
+        <div class="pure-menu pure-menu-horizontal">
+          <ul>
+            <li class="pure-menu-item"><a href="." class="pure-menu-link">About</a></li>
+            <li class="pure-menu-item"><a href="https://stallion.io" class="pure-menu-link">Stallion CMS</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div><!-- end 3/4 main-column-->
+</div><!-- end layout-->
 {% endblock %}
-{{ assets.bundle("site.bundle.js") }}
-<!-- IE Input Placeholder Fix -->
-<script type="text/javascript">$(function(){$('input, textarea').placeholder();});</script>
-</body>
-</html>
+
+
+
+

@@ -12,13 +12,13 @@
       <groupId>io.stallion</groupId>
       <artifactId>stallion-core</artifactId>
       <version>.1-SNAPSHOT</version>
-      <scope>provided</scope>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>javax.ws.rs</groupId>
       <artifactId>javax.ws.rs-api</artifactId>
       <version>2.0</version>
-      <scope>provided</scope>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>eu.michael-simons</groupId>
@@ -33,6 +33,9 @@
         <artifactId>maven-assembly-plugin</artifactId>
         <configuration>
           <archive>
+            <manifest>
+              <mainClass>io.stallion.plugins.flatBlog.MainRunner</mainClass>
+            </manifest>
             <manifestEntries>
               <pluginBooterClass>io.stallion.plugins.flatBlog.FlatBlogPlugin</pluginBooterClass>
               <Build-Time>${maven.build.timestamp}</Build-Time>

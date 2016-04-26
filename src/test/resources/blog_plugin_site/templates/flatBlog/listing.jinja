@@ -1,14 +1,19 @@
 {% extends "/base.jinja" %}
-{% block main_content %}
-<div class="post-listing post-container">
+{% block main_body %}
+<div class="post-listing post-container posts">
     {% for post in postsPager.items %}
     <section class="post">
+      <header class="post-header">
         <h2 class="post-title"><a href="{{ post.slug }}">{{ post.title }}</a></h2>
-        <div class="post-byline">{% if post.author %}by {{ post.author }} at{% endif %} {{ utils.formatLocalDate(post.publishDate) }}</div>
-        <div class="post-bodyHtml">
+        <p class="post-meta">
+          By <a class="post-author" href="#">{{ post.author }}</a> {% if post.tags %}under {% for tag in tags %}fd <a class="post-category" href="#">{{ tag }}</a>{% endfor %}{% endif %}
+        </p>      
+
+      </header>
+      <div class="post-bodyHtml post-description">
             {{ post.summary }}
             <div><a href="{{ post.slug }}">Read more</a></div>
-        </div>
+      </div>
     </section>
     {% endfor %}
 </div><!--/listing-->

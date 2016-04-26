@@ -1,17 +1,13 @@
 {% extends "base.jinja" %}
-{% block "main_content" %}
-<div class="container inner-page">
-    <div class="row">
-        <div class="col-md-3 sidebar">
-            <header id="small-logo">
-                <h4>Stallion</h4>
-                <a href="/"><img src="{{ assets.url('/stallion-rearing-red-299.png') }}"></a>
-            </header>
-        </div><!--end sidebar-->
-        <div class="col-md-9 main-column">
-            <h1>{{ page.title }}</h1>
+{% block main_body %}
+<div class="posts">
+    <section class="post">
+        <header class="post-header">
+            <h2 class="post-title">{{ page.title }}</h2>
+        </header>
+        <div class="post-description">
             {{ page.content }}
-        </div><!--end main column-->
-    </div><!--end row -->
-</div><!--end container-->
+        </div>
+    </section>
+</div><!--end posts-->
 {% endblock %}
