@@ -3,6 +3,7 @@ package io.stallion.plugins.flatBlog.comments.tests;
 import io.stallion.email.EmailSender;
 import io.stallion.plugins.PluginRegistry;
 import io.stallion.plugins.flatBlog.comments.Comment;
+import io.stallion.plugins.flatBlog.comments.CommentWrapper;
 import io.stallion.plugins.flatBlog.comments.CommentsController;
 import io.stallion.plugins.flatBlog.comments.Constants;
 import io.stallion.plugins.flatBlog.FlatBlogPlugin;
@@ -43,7 +44,7 @@ public class TestEndpoints extends AppIntegrationCaseBase {
         comment.setAuthorWebSite("http://emperor.com");
         comment.setBodyHtml("You will submit my submit, you will submit to me! " + new Date().getTime());
         comment.setAuthorEmail(RandomStringUtils.randomAlphanumeric(20) + "@stallion.io");
-        comment.setThreadId("910");
+        comment.setThreadId(910L);
         CommentsController.instance().save(comment);
 
         CommentsController.instance().reset();
@@ -81,7 +82,7 @@ public class TestEndpoints extends AppIntegrationCaseBase {
         comment.setAuthorWebSite("http://emperor.com");
         comment.setBodyMarkdown("You will submit my submit, you will submit to me! " + new Date().getTime());
         comment.setAuthorEmail("nero@stallion.io");
-        comment.setThreadId("910");
+        comment.setThreadId(910L);
         comment.setParentPermalink("http://localhost:8090/randoms");
         comment.setParentTitle("The random stuff");
         //params.put("author", author);
@@ -120,8 +121,9 @@ public class TestEndpoints extends AppIntegrationCaseBase {
     public void testCommentAvatar() {
         Comment comment = new Comment();
         comment.setAuthorDisplayName("emperor");
-        Assert.assertEquals("E", comment.getAvatarLetter());
-        Assert.assertEquals("#774433", comment.getAvatarColor());
+        CommentWrapper wrapper = comment.toWrapper();
+        Assert.assertEquals("E", wrapper.getAvatarLetter());
+        Assert.assertEquals("#774433", wrapper.getAvatarColor());
     }
 
     @Test

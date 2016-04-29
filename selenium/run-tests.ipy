@@ -1,0 +1,25 @@
+#!/usr/local/bin/ipython
+
+import os
+import subprocess
+import time
+
+proj_dir = os.path.abspath(os.path.dirname(__file__) + '/..')
+app_dir = proj_dir + '/src/test/resources/blog_plugin_site/'
+
+os.chdir(proj_dir)
+print 'In directory ', os.getcwd()
+
+p = subprocess.Popen(['mvn', 'compile', 'exec:java', '-Dexec.mainClass=io.stallion.plugins.flatBlog.MainRunner', '-Dexec.args=serve -autoReload -targetPath=' + app_dir + ' -logLevel=FINER  -devMode=true -env=local -localMode=true'])
+
+time.sleep(5)
+
+!node selenium/test-blog.js
+
+#p.terminate()
+p.wait()
+
+
+
+
+

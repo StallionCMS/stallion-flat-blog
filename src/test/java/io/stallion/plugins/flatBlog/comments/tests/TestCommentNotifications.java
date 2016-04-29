@@ -103,7 +103,7 @@ public class TestCommentNotifications extends AppIntegrationCaseBase {
 
         List<Comment> comments = list(one, two, three, four, five, threeAgain, six, seven);
 
-        String parentId = DalRegistry.instance().getTickets().nextId().toString();
+        Long parentId = DalRegistry.instance().getTickets().nextId();
         for (Comment cmt: comments) {
             cmt.setParentTitle("Test Post");
             cmt.setThreadId(parentId);

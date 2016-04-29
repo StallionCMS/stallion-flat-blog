@@ -1,4 +1,3 @@
-
 /**
 * Commenting
 */
@@ -6,221 +5,80 @@
 
     var plugin = {};
     window.stallion_plugin_comments = plugin;
+    window.st_flat_comments = plugin;
 
+    
     plugin.ready = function() {
-        $('.st-comment-form textarea').autogrow();
-        $('.st-comment-form .hidden-at-first').hide();
-        $('.st-comment-form .comment-body-ta').focus(function() {
+        plugin.compileRiot();
+    };
 
-            $('.st-comment-form .hidden-at-first').show();
-            //$.scrollTo(this);
-
-        });
-        $('.st-comment-form').submit(plugin.handleSubmit);
-        $('.st-comment .st-delete-comment-button, .st-comment .st-reject-comment-button').click(plugin.reject);
-        $('.st-comment .st-undelete-comment-button').click(plugin.approve);
-        $('.st-comment .st-approve-comment-button').click(plugin.approve);
-        plugin.hydrateFromLocalStorage();
-        console.log('text complete!');
-        $('.st-comment-form textarea').textcomplete([{
-            match: /(^|\s)@(\w*)$/,
-            search: function (term, callback) {
-                console.log('search!', term);
-                term = term || "";
-                term = term.toLowerCase();
-                var words = [];
-                stallion_comments_context_comments.forEach(function(comment) {
-                    console.log('push', comment);
-                    words.push(comment.authorDisplayName);
+    plugin.compileRiot = function() {
+        riot.compile(function() {
+            if (stFlatCommentsContext.comments) {
+                var x = 0;
+                stFlatCommentsContext.comments.forEach(function(comment) {
+                    if (x === 0) {
+                        x++;
+                    }
+                    console.log('mount', '.st-comment-' + comment.id, $('.st-comment-' + comment.id).length, comment.bodyHtml);
+                    var result = riot.mount('.st-comment-' + comment.id, comment);
+                    stFlatCommentsContext.riotTagByCommentId[comment.id] = result[0];
+                    console.log('result ', result);
                 });
-                callback($.map(words, function (word) {
-                    return word.toLowerCase().indexOf(term) === 0 ? word : null;
-                }));
-            },
-            replace: function (word) {
-                if (word.indexOf(' ') > -1) {
-                    word = '"' + word + '"';
-                }
-                return '$1@' + word + '';
-            }
-        }]);
-        
-    };
-
-    var toStoreFields = ['authorDisplayName', 'authorEmail', 'authorWebSite', 'mentionSubscribe'];
-
-
-
-    plugin.approve = function(commentId) {
-        stallion.request({
-            url: '/_stx/flatBlog/comments/' + commentId + '/restore-and-approve',
-            method: 'POST',
-            success: function() {
-                $cmt.addClass('st-comment-approved').removeClass('st-comment-pending').removeClass('st-comment-rejected');
-             }
-        });
-        
-    };
-
-    plugin.reject = function(commentId) {
-        stallion.request({
-            url: '/_stx/flatBlog/comments/' + commentId + '/delete',
-            method: 'POST',
-            success: function() {
-                $cmt.addClass('st-comment-rejected').removeClass('st-comment-pending').removeClass('st-comment-approved');
                 
             }
-        });
-    };
-    
-    
-    plugin.hydrateFromLocalStorage = function() {
-        if (localStorage.stCommenterInfo) {
-            var data = JSON.parse(localStorage.stCommenterInfo);
-            $.each(toStoreFields, function(i, fieldName) {
-                if (data[fieldName] !== undefined) {
-                    $(".st-control[name='" + fieldName + "']").val(data[fieldName]);
-                    if (fieldName === 'mentionSubscribe' && data[fieldName] === false) {
-                        $("input[name='" + fieldName + "']").removeAttr('checked');
-                    } else {
-                        $("input[name='" + fieldName + "']").attr('checked', 'true');
-                    }
+            
+            var instances = riot.mount('#new-comments-riot-target', {comments: stFlatCommentsContext.newComments});
+            window.stCommentsNewCommentTag = instances[0];
+            stFlatCommentsContext.newCommentsRiot = window.stCommentsNewCommentTag; 
 
-                    console.log("Init from local storate: ", fieldName, data[fieldName]);
-                }
+            var form_instances = riot.mount('.st-comments-form-wrapper', {
+                threadId: stFlatCommentsContext.threadId,
+                parentTitle: stFlatCommentsContext.parentTitle,
+                parentPermalink: stFlatCommentsContext.parentPermalink
             });
-        }
-    };
-
-    plugin.storeToLocalStorage = function(data) {
-        var toStore = {};
-        $.each(toStoreFields, function(i, fieldName) {
-            toStore[fieldName] = data[fieldName];
-        });
-        localStorage.stCommenterInfo = JSON.stringify(toStore);
-        console.log("Stored to local storage: " + localStorage.stCommenterInfo);
-    };
-
-    plugin.editComment = function(commentId) {
-        console.log('edit comment ', commentId);
-        var cmt = window.st_comments_current_page_comments[commentId];
-        var id = "st-comments-form-" + cmt.threadId.toLowerCase().replace(/\./g, '-').replace(/\--+/g, '-');
-        console.log('id' , id);
-        var $form = $('#' + id);
-        $.each($form.get(0).elements, function(i, ele) {
-            ele.value = cmt[ele.getAttribute('name')];
-        });
-        $form.find('textarea[name="bodyMarkdown"]').val(cmt.bodyMarkdown);
-        $('#' + id + ' .hide-on-edit').hide();
-        $('#' + id + ' .st-form-header').html("Edit comment");
-        $('#' + id + ' .st-button-submit').html("Save changes");
-        $('#' + id + ' a.st-cancel-link').css("display", "inline-block");
-        $('#' + id + ' textarea[name="body"]').focus().keydown();
-        $('#' + id + ' input[name="editingCommentId"]').val(commentId);
-        window.location.hash = id;
-
-
-    };
-
-    plugin.cancelEditComment = function(threadId) {
-        var id = "st-comments-form-" + threadId;
-        $('#' + id + ' .st-form-header').html("Write a comment");
-        $('#' + id + ' .st-button-submit').html("Submit new comment");
-        $('#' + id + ' textarea[name="body"]').val("");
-        $('#' + id + ' .st-cancel-link').css('display', "none");
-        $('#' + id + ' input[name="editingCommentId"]').val('');
-        $('#' + id + '.hide-on-edit').show();
-    };
-
-    var newCommentTemplate = '<div id="st-comment-{comment.id}" class="st-new-comment st-comment"><div class="st-comment-byline">You ({comment.authorDisplayName}) just commented</div><div class="st-comment-body">{ comment.body}</div><div class="st-comment-actions"><a href="javascript:stallion_plugin_comments.editComment(\'{comment.id}\')">edit</a> &nbsp; <a href="">delete</a></div>';
-
-    plugin.handleSubmit = function(event, b, c) {
-        event.preventDefault(event);
-        var form = this;
-        console.log('handleSubmit! ', this, event, b, c);
-        var data = stallion.formToData(form);
-        
-        console.log('data', data);
-
-        var url = '/_stx/flatBlog/comments/submit';
-        var isEdit = false;
-        if (data.editingCommentId) {
-            url = '/_stx/flatBlog/comments/' + data.editingCommentId + '/revise';
-            isEdit = true;
-        }
-        data.captchaResponse = data['g-recaptcha-response'];
-        stallion.request({
-            url: url,
-            method: 'post',
-            form: form,
-            success: function(comment) {
-                comment.editable = true;
-                $.each(form.elements, function(i, ele) {
-                    if (ele.name === 'body') {
-                        ele.value = '';
-                    }
-                });
-                $(form).find('.hidden-at-first').hide();
-                if ($('.no-comments.no-comments').length) {
-                    $('.no-comments.no-comments').css('display', "none");
+            if (form_instances) {
+                window.stCommentForm = form_instances[0];
+                stFlatCommentsContext.commentFormRiot = window.stCommentForm;
+            }
+            
+            setTimeout(function() {
+                if (window.location.hash && $(window.location.hash).length > 0) {
+                    $('html, body').animate({
+                        scrollTop: $(window.location.hash).offset().top
+                    }, 300);                
                 }
-                window.location.hash = 'st-comment-' + comment.id;
-                setTimeout(function() {
-                    $('#st-comment-' + comment.id).css('backgroundColor', 'transparent');
-                }, 300);
-                if (window.grecaptcha) {
-                    window.grecaptcha.reset();
-                }
-                if (!isEdit) {
-                    window.st_comments_new_comments.push(comment);
-                    window.st_comments_current_page_comments[comment.id] = comment;
-                    window.stallion_comments_context_comments.push(comment);
-                    plugin.storeToLocalStorage(data);
-                    st_comments_new_comment_tag.trigger('newComment', comment);
-                } else {
-                    // hackkkk
-                    window.location.reload();
-                }
-            },
-            data: data
+            }, 200);
+            plugin.performQueryActions();
         });
         
-        return false;
     };
 
+    
+    plugin.performQueryActions = function() {
+        var params = stallion.queryParams();
+        var action = params.stModerateAction;
+        var commentId = parseInt(params.stModerateId, 10);
+        if (!action || !commentId) {
+            return;
+        }
+        var tag = stFlatCommentsContext.riotTagByCommentId[commentId];
+        if (!tag) {
+            console.log('no riotjs tag found for comment ', commentId);
+            return;
+        }
+        if (action === 'approve') {
+            tag.approve();
+        } else if (action === 'reject') {
+            tag.reject();
+        }
+    };
+    
+    
     $(document).ready(plugin.ready);
 
     
-    //riot.compile();
-  $(document).ready(function() {
-    riot.compile(function() {
-        if (window.stallion_comments_context_comments) {
-            var x = 0;
-            window.stallion_comments_context_comments.forEach(function(comment) {
-                if (x === 0) {
-                    x++;
-                }
-                console.log('mount', '.st-comment-' + comment.id, $('.st-comment-' + comment.id).length, comment.bodyHtml);
-                var result = riot.mount('.st-comment-' + comment.id, comment);
-                console.log('result ', result);
-            });
-            
-        }
-        window.st_comments_new_comments = window.st_comments_new_comments || [];
-
-        var instances = riot.mount('#new-comments-riot-target', {comments: window.st_comments_new_comments});
-        window.st_comments_new_comment_tag = instances[0];
-        //console.log('instances ', instances);
-
-        setTimeout(function() {
-            if (window.location.hash && $(window.location.hash).length > 0) {
-                $('html, body').animate({
-                    scrollTop: $(window.location.hash).offset().top
-                }, 300);                
-            }
-        }, 200);
-    })
-  }());
+    
 
 }());
 

@@ -73,7 +73,7 @@ public class CommentsController extends StandardModelController<Comment> {
                 continue;
             }
             // Don't notify commenters who never had their comment approved
-            if (!threadComment.getIsApproved()) {
+            if (!threadComment.isApproved()) {
                 continue;
             }
             // Don't notify people of their own comment, obviously

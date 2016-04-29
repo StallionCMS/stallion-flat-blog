@@ -4,6 +4,7 @@ slug:/war-of-the-worlds
 publishDate:2014-05-21 16:10 UTC
 author: H.G. Wells
 tags: sci-fi
+id: 1461693567547
 draft: false
 
 Then, by the light of their own destruction, I saw them staggering and falling, and their supporters turning to run.

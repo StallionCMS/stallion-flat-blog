@@ -67,7 +67,9 @@
     display:none;
 }
 
-
+.st-comment-label {
+    margin: 0em 0em 1em 0em;
+}
 
 
 .st-comment-author-avatar.st-letter-avatar {
@@ -75,13 +77,14 @@
     height: 40px;
     color: #F9F9F9;
     text-align: center;
-    padding-top: 8px;
+    padding-top: 6px;
     font-size: 24px;
     font-weight: 300;
     font-family: "helvetica neue", Helvetica, Arial;
     float: left;
     margin-right: 0px;
     font-smooth:always;
+    border-radius: 2px;
 
 }
 .st-comment-main {
@@ -126,4 +129,18 @@
 
 .dropdown-menu a:hover {
     cursor: pointer;
+}
+
+
+.st-comments .moderation-actions button {
+    border-radius: 3px;
+    background-color: #F9F9F9;
+    border: 1px solid #DDD;
+    color: #555;
+    font-size: 11px;
+    padding: 3px 8px 3px 8px;
+}
+.st-comments .moderation-actions button:hover {
+    background-color: #E9E9E9;
+    border: 1px solid #999;
 }

@@ -47,6 +47,8 @@ public class FlatBlogSettings extends BasePluginSettings {
     private String realIpHeader;
     @SettingMeta(cls=ArrayList.class)
     private List<String> moderatorEmails = null;
+    @SettingMeta(valBoolean = false, help="If true, will display a gravtar image next to users images.")
+    private Boolean commentsUseGravatar;
 
     @SettingMeta(val="blog_posts")
     private String blogPostTableName;
@@ -183,4 +185,12 @@ public class FlatBlogSettings extends BasePluginSettings {
         this.reCaptchaSiteKey = reCaptchaSiteKey;
     }
 
+    public Boolean getCommentsUseGravatar() {
+        return commentsUseGravatar;
+    }
+
+    public FlatBlogSettings setCommentsUseGravatar(Boolean commentsUseGravatar) {
+        this.commentsUseGravatar = commentsUseGravatar;
+        return this;
+    }
 }

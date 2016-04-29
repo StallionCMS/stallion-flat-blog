@@ -32,6 +32,7 @@ import io.stallion.dal.base.SettableOptions;
 import io.stallion.dal.filtering.FilterChain;
 import io.stallion.dal.filtering.Pager;
 import io.stallion.exceptions.*;
+import io.stallion.exceptions.NotFoundException;
 import io.stallion.plugins.flatBlog.contacts.Contact;
 import io.stallion.plugins.flatBlog.contacts.ContactsController;
 import io.stallion.plugins.flatBlog.contacts.SubscriptionFrequency;
@@ -66,7 +67,7 @@ public class CommentsEndpoints implements EndpointResource {
     @POST
     @Path("/comments/submit")
     @JsonView(RestrictedViews.Owner.class)
-    public Comment submitComment(
+    public CommentWrapper submitComment(
             @ObjectParam(name="comment", targetClass = Comment.class, restricted = SettableOptions.Createable.class) Comment comment) throws Exception {
 
         comment = CommentsController.instance().mergeWithDefaults(comment, null);
@@ -95,10 +96,10 @@ public class CommentsEndpoints implements EndpointResource {
         checkAkismet(comment);
         processAndSaveComment(comment);
         NewCommentEmailHandler.enqueue(comment);
-        if (comment.getIsApproved()) {
+        if (comment.isApproved()) {
             CommentsController.instance().postCommentApproved(comment);
         }
-        return CommentsController.instance().forId(comment.getId());
+        return CommentsController.instance().forId(comment.getId()).toWrapper(true);
     }
 
     private void checkRECaptcha(Comment comment) {
@@ -181,11 +182,11 @@ public class CommentsEndpoints implements EndpointResource {
             if (comment.getAkismetApproved() ||
                     empty(FlatBlogSettings.getInstance().getAkismetKey())) {
                 comment.setState(State.APPROVED);
-                comment.setIsApproved(true);
+                comment.setApproved(true);
             }
         }
 
-        if (comment.getIsApproved()) {
+        if (comment.isApproved()) {
             comment.setPreviouslyApproved(true);
         }
 
@@ -265,7 +266,7 @@ public class CommentsEndpoints implements EndpointResource {
     }
 
     @GET
-    @Path("/comments/admin-dashboard")
+    @Path("/comments/dashboard")
     @Produces("text/html")
     @MinRole(Role.STAFF)
     public Object adminDashboard() throws Exception {
@@ -354,7 +355,7 @@ public class CommentsEndpoints implements EndpointResource {
         }
         revisedComment = CommentsController.instance().mergeDetached(id, revisedComment);
         CommentsController.instance().save(revisedComment);
-        return existing;
+        return revisedComment.toWrapper();
     }
 
     @POST
@@ -362,10 +363,10 @@ public class CommentsEndpoints implements EndpointResource {
     @Path("/comments/:id/delete")
     public Object deleteComment(@PathParam("id") Long id) {
         Comment cmt = CommentsController.instance().hardGet(id);
-        if (cmt.getIsApproved()) {
+        if (cmt.isApproved()) {
             cmt.setPreviouslyApproved(true);
         }
-        cmt.setIsApproved(false);
+        cmt.setApproved(false);
         cmt.setModeratedAt(mils());
         cmt.setModeratorApproved(false);
         cmt.setState(State.REJECTED);
@@ -377,9 +378,12 @@ public class CommentsEndpoints implements EndpointResource {
     @MinRole(Role.STAFF)
     @Path("/comments/:id/restore-and-approve")
     public Object restoreAndApproveComment(@PathParam("id") Long id) {
-        Comment cmt = CommentsController.instance().hardGet(id);
+        Comment cmt = CommentsController.instance().forIdWithDeleted(id);
+        if (cmt == null) {
+            throw new NotFoundException("Could not find comment with that id " + id);
+        }
         cmt.setDeleted(false);
-        cmt.setIsApproved(true);
+        cmt.setApproved(true);
         cmt.setModeratorApproved(true);
         cmt.setModeratedAt(mils());
         cmt.setState(State.APPROVED);

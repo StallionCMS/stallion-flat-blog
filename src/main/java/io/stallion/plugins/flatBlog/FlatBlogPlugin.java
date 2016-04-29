@@ -27,6 +27,7 @@ import io.stallion.plugins.flatBlog.blog.*;
 import io.stallion.plugins.flatBlog.comments.CommentsEndpoints;
 import io.stallion.plugins.flatBlog.comments.CommentsContextHook;
 import io.stallion.plugins.flatBlog.comments.CommentsController;
+import io.stallion.plugins.flatBlog.comments.CommentsTag;
 import io.stallion.plugins.flatBlog.contacts.*;
 import io.stallion.plugins.flatBlog.settings.BlogConfig;
 import io.stallion.restfulEndpoints.EndpointsRegistry;
@@ -138,6 +139,7 @@ public class FlatBlogPlugin extends StallionJavaPlugin {
                         new BundleFile().setPluginName("flatBlog").setLiveUrl("comments-public.js")
                 )
         );
+        TemplateRenderer.instance().getJinjaTemplating().registerTag(new CommentsTag());
         Log.info("Comments boot complete");
     }
 }

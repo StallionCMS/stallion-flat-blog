@@ -9,7 +9,7 @@
 
     contacts.init = function() {
         $('.st-contacts-form').submit(contacts.onSubmitHandler);
-        $('.st-contacts-form textarea').autogrow();
+        stallion.autoGrow({}, $('.st-contacts-form textarea'));
     };
 
     contacts.onSubmitHandler = function(event, b, c) {

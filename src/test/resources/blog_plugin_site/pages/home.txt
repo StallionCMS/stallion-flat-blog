@@ -1,0 +1,6 @@
+Home
+=================================
+slug:/
+template:page.jinja
+
+### Welcome to an example flat-file blog and site.

@@ -22,6 +22,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import io.stallion.Context;
 import io.stallion.dal.base.*;
 import io.stallion.dal.file.ModelWithFilePath;
+import io.stallion.plugins.flatBlog.FlatBlogSettings;
 import io.stallion.users.Role;
 import io.stallion.utils.DateUtils;
 import io.stallion.utils.GeneralUtils;
@@ -54,14 +55,14 @@ public class Comment extends ModelBase implements ModelWithFilePath {
     private String authorWebSite = "";
     private String authorSecret = "";
     private State state = State.PENDING_AKISMET;
-    private Boolean isApproved = false;
+    private Boolean approved = false;
     private Boolean akismetApproved = false;
     private Boolean moderatorApproved = false;
     private Long akismetCheckedAt = 0L;
     private Long moderatedAt = 0L;
     private Long approvedAt = 0L;
     private Long parentId = 0L;
-    private String threadId = "";
+    private Long threadId = 0L;
     private String editingToken = "";
     private String parentPermalink = "";
     private String captchaResponse = "";
@@ -73,6 +74,40 @@ public class Comment extends ModelBase implements ModelWithFilePath {
     private Boolean previouslyApproved = false;
     private Boolean threadSubscribe = false;
     private Boolean mentionSubscribe = false;
+
+    public CommentWrapper toWrapper() {
+        return toWrapper(false);
+    }
+
+    public CommentWrapper toWrapper(boolean withEditable) {
+        CommentWrapper wrapper = new CommentWrapper()
+                .setAdminable(isAdminable())
+                .setApproved(isApproved())
+                .setAuthorDisplayName(getAuthorDisplayName())
+                .setAuthorWebSite(getAuthorWebSite())
+                .setBodyHtml(getBodyHtml())
+                .setState(getState())
+                .setCreatedTicks(getCreatedTicks())
+                .setEditable(isEditable())
+                .setParentId(getParentId())
+                .setPermalink(getPermalink())
+                .setId(getId())
+                .setParentPermalink(getParentPermalink())
+                .setPending(state == State.PENDING_MODERATION)
+                .setThreadId(getThreadId())
+                ;
+        if (isEditable() || isAdminable() || withEditable) {
+            wrapper.setBodyMarkdown(getBodyMarkdown());
+            wrapper.setAuthorEmail(getAuthorEmail());
+        }
+        if (FlatBlogSettings.getInstance().getCommentsUseGravatar()) {
+            wrapper.setAuthorEmailHash(GeneralUtils.md5Hash(getAuthorEmail()));
+        }
+
+        return wrapper;
+
+    }
+
 
     @Setable(value = OwnerUpdateable.class, creatable = true)
     public String getAuthorFirstName() {
@@ -155,13 +190,13 @@ public class Comment extends ModelBase implements ModelWithFilePath {
         return this;
     }
 
-    public Boolean getIsApproved() {
-        return isApproved;
+    public Boolean isApproved() {
+        return approved;
     }
 
     @JsonView(RestrictedViews.Member.class)
-    public Comment setIsApproved(Boolean isApproved) {
-        this.isApproved = isApproved;
+    public Comment setApproved(Boolean isApproved) {
+        this.approved = isApproved;
         return this;
     }
 
@@ -217,11 +252,11 @@ public class Comment extends ModelBase implements ModelWithFilePath {
     @JsonView(RestrictedViews.Public.class)
     @Setable(value = Immutable.class, creatable = true)
     @AlternativeKey
-    public String getThreadId() {
+    public Long getThreadId() {
         return threadId;
     }
 
-    public Comment setThreadId(String threadId) {
+    public Comment setThreadId(Long threadId) {
         this.threadId = threadId;
         return this;
     }
@@ -276,20 +311,6 @@ public class Comment extends ModelBase implements ModelWithFilePath {
         return this;
     }
 
-    @JsonView(RestrictedViews.Public.class)
-    public String getAvatarLetter() {
-        return authorDisplayName.substring(0, 1).toUpperCase();
-    }
-
-    @JsonView(RestrictedViews.Public.class)
-    public String getAvatarColor() {
-
-        String hash = DigestUtils.md5Hex(authorDisplayName).toUpperCase();
-        String r = Integer.toHexString(Integer.parseInt(hash.substring(0, 1), 16) / 2);
-        String g = Integer.toHexString(Integer.parseInt(hash.substring(1, 2), 16) / 2);
-        String b = Integer.toHexString(Integer.parseInt(hash.substring(2, 3), 16) / 2);
-        return "#" + r + r + g + g + b + b;
-    }
 
     @JsonIgnore
     @JsonView(RestrictedViews.Member.class)
@@ -310,13 +331,8 @@ public class Comment extends ModelBase implements ModelWithFilePath {
 
     @JsonIgnore
     public boolean isAdminable() {
-        if (Context.getRequest() != null) {
-            Cookie cookie = Context.getRequest().getCookie(Constants.AUTHOR_SECRET_COOKIE);
-            if (cookie != null) {
-                if (cookie.getValue().equals(getAuthorSecret())) {
-                    return true;
-                }
-            }
+        if (Context.getUser().isInRole(Role.STAFF)) {
+            return true;
         }
         return false;
     }

@@ -23,3 +23,6 @@ target
 sitePro/site-pro-spec.txt
 nohup
 build-executable.ipy
+stallion.local.toml
+users/
+app-data/

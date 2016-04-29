@@ -34,7 +34,7 @@ public class TestCommentEmailer extends AppIntegrationCaseBase {
         comment.setAuthorWebSite("http://emperor.com");
         comment.setBodyHtml("You will submit my submit, you will submit to me! " + new Date().getTime());
         comment.setAuthorEmail(RandomStringUtils.randomAlphanumeric(20) + "@stallion.io");
-        comment.setThreadId("340");
+        comment.setThreadId(340L);
         comment.setId(350L);
         comment.setParentPermalink("http://localhost:8090/random-thoughts");
         comment.setParentId(360L);

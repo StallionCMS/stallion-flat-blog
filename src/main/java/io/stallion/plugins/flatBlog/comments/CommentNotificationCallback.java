@@ -40,7 +40,7 @@ public class CommentNotificationCallback implements NotificationCallbackHandlerI
 
         Comment comment = CommentsController.instance().forId(commentId);
 
-        if (comment == null || !comment.getIsApproved()) {
+        if (comment == null || !comment.isApproved()) {
             return null;
         }
 

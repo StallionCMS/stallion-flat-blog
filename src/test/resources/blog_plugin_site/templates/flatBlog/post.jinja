@@ -13,8 +13,7 @@
     </div>
   </section>
   <div class="commenting">
-    {{ commenting.renderComments(post.compoundId) }}
-    {{ commenting.renderForm(post.compoundId, post.permalink, post.title) }}
+    {% comments_section %}
   </div>
 </div>
 {% endblock %}
