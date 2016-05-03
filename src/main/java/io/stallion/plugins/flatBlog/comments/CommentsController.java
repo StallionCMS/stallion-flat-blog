@@ -21,6 +21,7 @@ import io.stallion.dal.file.JsonFilePersister;
 import io.stallion.exceptions.NotFoundException;
 import io.stallion.plugins.flatBlog.contacts.*;
 import io.stallion.services.Log;
+import io.stallion.utils.DateUtils;
 import io.stallion.utils.Sanitize;
 import org.pegdown.Extensions;
 import org.pegdown.PegDownProcessor;
@@ -65,9 +66,7 @@ public class CommentsController extends StandardModelController<Comment> {
         List<Comment> threadComments = listForKey("threadId", newComment.getThreadId());
         Set<Long> seenContactIds = new HashSet<Long>();
         for(Comment threadComment: threadComments) {
-            if (threadComment.getAuthorEmail().equals("testing+one@stallion.io") && newComment.getAuthorEmail().equals("testing+seven@stallion.io")) {
-                Log.info("Notify {0}?", threadComment.getAuthorEmail());
-            }
+
             // Skip the current comment
             if (threadComment.getId().equals(newComment.getId())) {
                 continue;
@@ -139,9 +138,10 @@ public class CommentsController extends StandardModelController<Comment> {
                 .setCommentId(newComment.getId());
         Notification notification = new Notification()
                 .setHandler(handler)
-                .setCallbackPlugin("comments")
+                .setCallbackPlugin("flatBlog")
                 .setFrequency(subscription.getFrequency())
                 .setContactId(notifyContact.getId())
+                .setCreatedAt(DateUtils.mils())
                 .setSubscriptionId(subscription.getId().toString())
                 .setKey("comment-notify---" + newComment.getId().toString() + "---" + notifyContact.getId().toString() );
                 ;
@@ -167,17 +167,23 @@ public class CommentsController extends StandardModelController<Comment> {
                         Extensions.STRIKETHROUGH
         );
 
-        String html = pegDownProcessor.markdownToHtml(comment.getBodyMarkdown());
+        String html = comment.getBodyMarkdown();
+        html = replaceAtMentions(comment, html);
+        html = pegDownProcessor.markdownToHtml(html);
 
         html = Sanitize.basicSanitize(html);
         html = html.replace("</p>", "</p>\n\n");
         html = html.replace("<br>", "<br>\n\n");
-        html = replaceAtMentions(comment, html);
+
         Log.info("New body html: {0}", html);
         // make links no-follow
         comment.setBodyHtml(html);
-        // Get rid of dangerous tags in the original markdown, also, just to be safe
-        comment.setBodyMarkdown(Sanitize.basicSanitize(comment.getBodyMarkdown()));
+        // Get rid of <script> tags in the original markdown, also, just to be safe
+        // This should not be necessary as we never inject bodyMarkdown directly onto the page,
+        // but it never hurts to be extra careful. We don't use the sanitizer because
+        // we don't want tons of HTML entities to be inserted, as that makes it harder
+        // for the markdown to be edited later
+        comment.setBodyMarkdown(scriptMatcher.matcher(comment.getBodyMarkdown()).replaceAll(""));
 
         comment.setParentTitle(Sanitize.stripAll(comment.getParentTitle()));
         comment.setAuthorFirstName(Sanitize.stripAll(comment.getAuthorFirstName()));
@@ -187,15 +193,22 @@ public class CommentsController extends StandardModelController<Comment> {
         comment.setAuthorWebSite(Sanitize.stripAll(comment.getAuthorWebSite()));
     }
 
+    static Pattern scriptMatcher = Pattern.compile("(?s)<script.*?(/>|</script>)");
+
+
     static Pattern atMentionMatcher = Pattern.compile("(@(\\w+)|@\"([^\"]+)\"|@'([^']+)')");
 
     public String replaceAtMentions(Comment comment, String body) {
-        body = body.replace("&#64;", "@");
+        return replaceAtMentionsForThreadComments(comment, body, listCommentsForThread(comment.getThreadId()));
+    }
+
+    public String replaceAtMentionsForThreadComments(Comment comment, String body, List<Comment> threadComments) {
+        body = body.replace("&#64;", "@").replace("&#34;", "\"");
         StringBuffer output = new StringBuffer();
         Matcher matcher = atMentionMatcher.matcher(body);
         Map<String, Long> nameToContactId = map();
         Map<Long, String> contactIdToCommentId = map();
-        for (Comment cmt: listCommentsForThread(comment.getThreadId())) {
+        for (Comment cmt: threadComments) {
             if (cmt.getId().equals(comment.getId())) {
                 continue;
             }
@@ -225,8 +238,8 @@ public class CommentsController extends StandardModelController<Comment> {
         return output.toString();
     }
 
-    public List<Comment> listCommentsForThread(Object threadId) {
-        return filterByKey("threadId", threadId.toString()).all();
+    public List<Comment> listCommentsForThread(Long threadId) {
+        return filterByKey("threadId", threadId).all();
     }
 
     public CommentSubscriptionInfo getCommentSubscriptionInfo(Comment comment, Contact contact) {

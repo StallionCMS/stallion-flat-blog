@@ -30,9 +30,9 @@ public class TestEndpoints extends AppIntegrationCaseBase {
     public static void setUpClass() throws Exception {
         startApp("/blog_plugin_site");
         FlatBlogPlugin booter = new FlatBlogPlugin();
-        booter.setPluginRegistry(PluginRegistry.instance());
+        PluginRegistry.instance().loadPluginFromBooter(booter);
         booter.boot();
-        PluginRegistry.instance().getJavaPluginByName().put("comments", booter);
+
 
 
     }
@@ -91,7 +91,7 @@ public class TestEndpoints extends AppIntegrationCaseBase {
         //params.put("email", email);
         response = client.post("/_stx/flatBlog/comments/submit", comment);
         assertResponseContains(response, comment.getBodyHtml());
-
+        String authorSecret = response.getCookie("stCommentAuthorKey").getValue();
 
         Comment resultComment = JSON.parse(response.getContent(), Comment.class);
         String newBody = "New body";
@@ -100,7 +100,7 @@ public class TestEndpoints extends AppIntegrationCaseBase {
         // Update a comment
         MockRequest request = new MockRequest("/_stx/flatBlog/comments/" + resultComment.getId() + "/revise", "POST");
         request.setDataObject(resultComment);
-        request.setCookies(new Cookie(Constants.AUTHOR_SECRET_COOKIE, resultComment.getAuthorSecret()));
+        request.setCookies(new Cookie(Constants.AUTHOR_SECRET_COOKIE, authorSecret));
         response = client.request(request);
         Log.finer("Revise response: {0}", response.getContent());
         Assert.assertEquals(200, response.getStatus());

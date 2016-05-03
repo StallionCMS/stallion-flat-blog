@@ -15,11 +15,13 @@
 
 package io.stallion.plugins.flatBlog.contacts;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import io.stallion.dal.base.MappedModel;
 import io.stallion.dal.base.UniqueKey;
 import io.stallion.dal.file.ModelWithFilePath;
 import io.stallion.email.Contactable;
 import io.stallion.utils.GeneralUtils;
+import io.stallion.utils.json.RestrictedViews;
 
 
 public class Contact extends MappedModel implements ModelWithFilePath, Contactable {
@@ -88,6 +90,7 @@ public class Contact extends MappedModel implements ModelWithFilePath, Contactab
         return this;
     }
 
+    @JsonView(RestrictedViews.Internal.class)
     @UniqueKey
     public String getEverCookie() {
         return everCookie;
@@ -115,6 +118,7 @@ public class Contact extends MappedModel implements ModelWithFilePath, Contactab
 
 
     @UniqueKey
+    @JsonView(RestrictedViews.Internal.class)
     public String getSecretToken() {
         return secretToken;
     }

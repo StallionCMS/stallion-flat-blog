@@ -414,16 +414,21 @@ public class CommentsEndpoints implements EndpointResource {
     @GET
     @Path("/comments/:id/view")
     @MinRole(Role.STAFF)
-    public Object viewComment(@PathParam("id") Object id) {
-        // Auth level is
-        return "view comment";
+    @Produces("application/json")
+    public Object viewComment(@PathParam("id") Long id) {
+        Comment cmt = CommentsController.instance().forIdWithDeleted(id);
+        if (cmt == null) {
+            throw new NotFoundException("Comment not found.");
+        }
+        return cmt.toWrapper();
     }
 
     @GET
     @Path("/comments/dashboard.json")
     @MinRole(Role.STAFF)
-    public Object dashboardScreen(@QueryParam("deleted") Boolean deleted) {
-
+    @Produces("application/json")
+    public Pager dashboardScreen(@QueryParam("deleted") Boolean deleted, @QueryParam("page") Integer page) {
+        page = or(page, 1);
         DashboardScreen screen = new DashboardScreen();
         FilterChain<Comment> comments = CommentsController.instance().filterChain();
         Log.info("Deleted: {0}", deleted);
@@ -432,8 +437,8 @@ public class CommentsEndpoints implements EndpointResource {
             comments = comments.includeDeleted();
         }
         comments = comments.sort("createdTicks", "desc");
-        screen.setComments(comments.all());
-        return screen;
+
+        return comments.pager(page, 50);
     }
 
 

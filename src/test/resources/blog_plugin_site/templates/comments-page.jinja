@@ -52,8 +52,7 @@
                 </section>
             </div><!--end posts-->
             <div class="commenting">
-              {{ commenting.renderComments(page.compoundId) }}
-              {{ commenting.renderForm(page.compoundId, page.permalink, page.title) }}
+              {% comments_section %}
             </div>
             
         </div><!--end content-->

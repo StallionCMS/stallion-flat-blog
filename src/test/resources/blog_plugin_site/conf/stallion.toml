@@ -2,3 +2,9 @@
 siteName="The Simple Blog Site"
 siteUrl="http://localhost:8090"
 
+[email]
+host = "none"
+username = "none"
+password = "none"
+defaultFromAddress = "testing1@stallion.io"
+adminEmails = ["testing1@stallion.io"]

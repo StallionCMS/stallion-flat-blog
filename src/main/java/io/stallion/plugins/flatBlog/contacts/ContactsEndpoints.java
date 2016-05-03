@@ -59,7 +59,7 @@ public class ContactsEndpoints implements EndpointResource {
             throw new io.stallion.exceptions.NotFoundException("Subscriptions for the contact not found.");
         }
         Map ctx = map();
-        List<Subscription> subscriptions = SubscriptionController.instance().filter("contactId", contact.getId().toString()).all();
+        List<Subscription> subscriptions = SubscriptionController.instance().filter("contactId", contact.getId()).all();
         ctx.put("subscriptionsSafeJson", Sanitize.htmlSafeJson(subscriptions));
         ctx.put("contact", Sanitize.htmlSafeJson(contact, "owner"));
         Log.info("Subscriptions contactEmail={0} contactId={1} subs-count={2}", contact.getEmail(), contact.getId(), subscriptions.size());

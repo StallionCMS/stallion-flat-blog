@@ -17,8 +17,9 @@ public class EndpointsCase  extends AppIntegrationCaseBase {
     public static void setUpClass() throws Exception {
         startApp("/blog_plugin_site");
         FlatBlogPlugin booter = new FlatBlogPlugin();
-        booter.setPluginRegistry(PluginRegistry.instance());
+        PluginRegistry.instance().loadPluginFromBooter(booter);
         booter.boot();
+
     }
 
 
@@ -40,7 +41,7 @@ public class EndpointsCase  extends AppIntegrationCaseBase {
     @Test
     public void testPostListing()
     {
-        MockResponse response = client.get("/");
+        MockResponse response = client.get("/blog/");
         Assert.assertEquals(200, response.getStatus());
         Log.finer("post root listing result: {0} ", response.getContent());
         Assert.assertTrue(response.getContent().contains("post-title"));
@@ -51,7 +52,7 @@ public class EndpointsCase  extends AppIntegrationCaseBase {
     @Test
     public void testPostsByTag()
     {
-        MockResponse response = client.get("/by-tag/sci-fi");
+        MockResponse response = client.get("/blog/by-tag/sci-fi");
         Assert.assertEquals(200, response.getStatus());
         Log.finer("flatBlog sci-fi tag result: {0} ", response.getContent());
         Assert.assertTrue(response.getContent().contains("post-container"));
@@ -62,7 +63,7 @@ public class EndpointsCase  extends AppIntegrationCaseBase {
     @Test
     public void testRss()
     {
-        MockResponse response = client.get("/rss.xml");
+        MockResponse response = client.get("/blog/rss.xml");
         Assert.assertEquals(200, response.getStatus());
         Log.finer("rss result: {0} ", response.getContent());
         Assert.assertTrue(!response.getContent().contains("post-container"));

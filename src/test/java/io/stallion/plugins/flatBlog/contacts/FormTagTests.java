@@ -20,8 +20,10 @@ public class FormTagTests extends AppIntegrationCaseBase {
     public static void setUpClass() throws Exception {
         startApp("/blog_plugin_site");
         FlatBlogPlugin booter = new FlatBlogPlugin();
-        booter.setPluginRegistry(PluginRegistry.instance());
+        PluginRegistry.instance().loadPluginFromBooter(booter);
         booter.boot();
+
+
     }
 
     @Test

@@ -36,7 +36,7 @@ public class TestCommentController extends AppIntegrationCaseBase {
     private static class MockCommentsController extends CommentsController {
 
         @Override
-        public List<Comment> listCommentsForThread(Object threadId) {
+        public List<Comment> listCommentsForThread(Long threadId) {
             return list(
                     (Comment) new Comment().setAuthorEmail("js").setAuthorDisplayName("John Smith").setContactId(400L).setId(500L),
                     (Comment) new Comment().setAuthorEmail("sm").setAuthorDisplayName("Sammy").setContactId(410L).setId(510L),

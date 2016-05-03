@@ -10,87 +10,6 @@ function CommentThreadPage() {
 
 var stCommentThreadPage = new CommentThreadPage();
 
-//<script>
- var DataBoundMixin = {
-     init: function() {
-         this.on('update', function() {
-             var self = this;
-             self.formData = self.opts.formData || {};
-             Object.keys(self).forEach(function(key) {
-                 var ele = self[key];
-                 if (!ele) {
-                     return;
-                 }
-                 var tag = ele.tagName;
-                 if (tag === undefined || tag === null) {
-                     return;
-                 }
-                 tag = tag.toUpperCase();
-                 if (tag !== 'INPUT' && tag !== 'TEXTAREA' && tag !== 'SELECT') {
-                     return;
-                 }
-                 var val = self.formData[ele.getAttribute('name')];
-                 if (val === undefined) {
-                     return;
-                 }
-                 var type = ele.getAttribute('type');
-                 if (type === 'checkbox' || type === 'radio') {
-                     if (val === true || val === ele.value) {
-                         ele.setAttribute('checked', true);
-                     } else {
-                         ele.removeAttribute('checked');
-                     }
-                 } else {
-                     $(ele).val(val).change();
-                 }
-             });
-         });
-     },
-     getFormData: function() {
-         var self = this;
-         var data = {};
-         Object.keys(self).forEach(function(key) {
-             var ele = self[key];
-             if (!ele) {
-                 return;
-             }
-             var tag = ele.tagName;
-             if (tag === undefined || tag === null) {
-                 return;
-             }
-             tag = tag.toUpperCase();
-             if (tag !== 'INPUT' && tag !== 'TEXTAREA' && tag !== 'SELECT') {
-                 return;
-             }
-             var type = ele.getAttribute('type');
-             var $ele = $(ele);
-             if (type === 'checkbox' || type === 'radio') {
-                 var checked = $ele.is(':checked');
-                 var val = $ele.val();
-                 if (checked) {
-                     if (val && val != 'true') {
-                         data[key] = val;
-                     } else {
-                         data[key] = true;
-                     }
-                 } else {
-                     data[key] = false;
-                 }
-             } else {
-                 data[key] = $(ele).val();
-             }
-             
-         });
-         return data;
-     },
-     updateData: function(formData) {
-         this.opts.formData = formData;
-         this.update();
-     }
- };
- riot.mixin('dataBoundMixin', DataBoundMixin);
-//</script>
-
 
 <raw>
   <span></span>
@@ -100,7 +19,7 @@ var stCommentThreadPage = new CommentThreadPage();
 
 <comment-form>
     <a name="st-comments-form"></a>
-    <form class="st-comment-form st-form pure-form pure-form-stacked" id="st-comments-form-{{ commentThreadIdSlug }}" onsubmit={onSubmit} name="theCommentForm">
+    <form id="st-comment-form" class="st-comment-form st-form pure-form pure-form-stacked" onsubmit={onSubmit} name="theCommentForm">
         <h3 if={!editMode} class="st-form-header comments-header write-comment">Write a comment</h3>
         <h3 if={editMode} class="st-form-header comments-header write-comment">Edit comment</h3>
         <div class="st-error-wrap"></div>
@@ -121,7 +40,7 @@ var stCommentThreadPage = new CommentThreadPage();
         </div>
         <div class="hide-on-edit" if={reCaptchaSiteKey && fieldsShown}>
             <div class="recaptcha-wrapper form-group st-field hidden-at-first">
-                <div class="g-recaptcha" data-sitekey="{{ reCaptchaSiteKey }}"></div>
+                <div class="g-recaptcha" data-sitekey="{ reCaptchaSiteKey }"></div>
             </div>
         </div>
         <div class="" if={fieldsShown && !editMode}>
@@ -134,13 +53,13 @@ var stCommentThreadPage = new CommentThreadPage();
         </div>
         <div class="st-actions">
             <button class="btn btn-primary btn-xml pure-button pure-button-primary st-button-submit">Submit Comment</button>
-            <a class="st-cancel-link" style="display:none; margin-left;" href="javascript:stallion_plugin_comments.cancelEditComment('{{ commentThreadIdSlug }}')">Cancel editing comment</a>
+            <a class="st-cancel-link" style="display:none; margin-left;" href="javascript:stallion_plugin_comments.cancelEditComment('{ commentThreadIdSlug }')">Cancel editing comment</a>
         </div>
         <p>&nbsp;</p>
     </form>
     
     <script>
-     this.mixin('dataBoundMixin');
+     this.mixin('databind');
      var self = this;
      fieldsShown = false;
      editMode = false;
@@ -281,7 +200,7 @@ var stCommentThreadPage = new CommentThreadPage();
                  term = term || "";
                  term = term.toLowerCase();
                  var words = [];
-                 stFlatCommentsContext.comments.forEach.forEach(function(comment) {
+                 stFlatCommentsContext.comments.forEach(function(comment) {
                      console.log('push', comment);
                      words.push(comment.authorDisplayName);
                  });

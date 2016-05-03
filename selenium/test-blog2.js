@@ -46,6 +46,7 @@ runner.addSuite((function() {
     suite.testFlow = function() {
         suite.submitComment();
         suite.editComment();
+        suite.moderateComment();
     };
     
     suite.submitComment = function() {
@@ -78,7 +79,24 @@ runner.addSuite((function() {
     };
 
     suite.moderateComment = function() {
+        var url = 'http://localhost:8090/justice-at-sunrise?stLogin=true&stModerateAction=reject&stModerateId=' + comment.id;
+        var email = 'testing1@stallion.io';
+        var password = 'yJ9sV1dq8LFu';
+        driver.get(url);
+        //debugger;
+        driver.findElement(By.name('bodyMarkdown')).sendKeys(comment.body);
+        driver.findElement(By.name('username')).sendKeys(email);
+        driver.findElement(By.name('password')).sendKeys(password);
+        driver.findElement(By.cssSelector('.st-button-submit')).click();
 
+        
+        helper.waitExists('#st-comment-' + comment.id + ' .st-comment-rejected');
+        driver.findElement(By.cssSelector('#st-comment-' + comment.id + ' .approve-button')).click();
+        //debugger;
+        helper.waitNotExists('#st-comment-' + comment.id + ' .st-comment-rejected');
+        driver.findElement(By.cssSelector('#st-comment-' + comment.id + ' .trash-button')).click();
+        driver.get('http://localhost:8090/justice-at-sunrise');
+        
     };
 
     suite.editSubscription = function() {

@@ -28,10 +28,11 @@ import javax.ws.rs.Path;
 public class AdminApiResource implements EndpointResource {
 
     @POST
-    @Path("/submit")
+    @Path("/dashboard")
     @JsonView(RestrictedViews.Member.class)
     @MinRole(Role.STAFF)
     public String dashboard() {
+
         return "";
     }
 

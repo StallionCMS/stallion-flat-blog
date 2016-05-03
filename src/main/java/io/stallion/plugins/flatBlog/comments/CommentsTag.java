@@ -23,6 +23,7 @@ import io.stallion.assets.AssetsController;
 import io.stallion.dal.base.Displayable;
 import io.stallion.dal.file.TextItem;
 import io.stallion.plugins.flatBlog.FlatBlogSettings;
+import io.stallion.services.Log;
 import io.stallion.templating.TemplateRenderer;
 
 import java.util.List;
@@ -42,11 +43,9 @@ public class CommentsTag implements Tag {
             Context.getResponse().getPageFooterLiterals().addDefinedBundle("flatBlog:public.js");
 
 
-
-
             jinjavaInterpreter.enterScope();
             Map<String, Object> context = jinjavaInterpreter.getContext();
-            TextItem post = (TextItem)context.get("post");
+            TextItem post = (TextItem) context.get("post");
             context.put("commentThreadId", post.getId());
 
             CommentThreadContext commentsContext = new CommentThreadContext();
@@ -56,7 +55,7 @@ public class CommentsTag implements Tag {
                     .setParentTitle(post.getTitle());
 
             List<CommentWrapper> comments = list();
-            for (Comment comment: CommentsController.instance()
+            for (Comment comment : CommentsController.instance()
                     .filterByKey("threadId", post.getId())
                     .filter("deleted", false)
                     .sort("createdTicks", "asc")
@@ -70,6 +69,9 @@ public class CommentsTag implements Tag {
             context.put("reCaptchaSiteKey", FlatBlogSettings.getInstance().getReCaptchaSiteKey());
 
             return TemplateRenderer.instance().renderTemplate("flatBlog:comments-for-thread.jinja", context);
+        } catch (RuntimeException e) {
+            Log.exception(e, "Error rendering comment thread tag.");
+            throw e;
         } finally {
             jinjavaInterpreter.leaveScope();
         }

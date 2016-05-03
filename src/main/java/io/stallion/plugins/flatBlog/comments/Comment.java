@@ -457,8 +457,9 @@ public class Comment extends ModelBase implements ModelWithFilePath {
         return threadSubscribe;
     }
 
-    public void setThreadSubscribe(Boolean threadSubscribe) {
+    public Comment setThreadSubscribe(Boolean threadSubscribe) {
         this.threadSubscribe = threadSubscribe;
+        return this;
     }
 
     @JsonView(RestrictedViews.Member.class)
@@ -467,8 +468,9 @@ public class Comment extends ModelBase implements ModelWithFilePath {
         return mentionSubscribe;
     }
 
-    public void setMentionSubscribe(Boolean mentionSubscribe) {
+    public Comment setMentionSubscribe(Boolean mentionSubscribe) {
         this.mentionSubscribe = mentionSubscribe;
+        return this;
     }
 
     @JsonView(RestrictedViews.Member.class)

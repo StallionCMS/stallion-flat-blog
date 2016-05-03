@@ -15,7 +15,7 @@ public class TestCommentHtml extends AppIntegrationCaseBase {
     public static void setUpClass() throws Exception {
         startApp("/blog_plugin_site");
         FlatBlogPlugin booter = new FlatBlogPlugin();
-        booter.setPluginRegistry(PluginRegistry.instance());
+        PluginRegistry.instance().loadPluginFromBooter(booter);
         booter.boot();
     }
 
@@ -23,7 +23,7 @@ public class TestCommentHtml extends AppIntegrationCaseBase {
     @Test
     public void testRenderCommentsAndForm() {
         MockResponse response = client.get("/random-thoughts");
-        assertResponseContains(response, "comments-header");
-        assertResponseContains(response, "<form class=\"st-comment-form ");
+        assertResponseContains(response, "stFlatCommentsContext");
+        assertResponseContains(response, "st-comments-form-wrapper");
     }
 }

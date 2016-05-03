@@ -28,9 +28,10 @@ public class EndpointTests extends AppIntegrationCaseBase {
         }
         startApp("/blog_plugin_site");
         FlatBlogPlugin booter = new FlatBlogPlugin();
-        booter.setPluginRegistry(PluginRegistry.instance());
+        PluginRegistry.instance().loadPluginFromBooter(booter);
         booter.boot();
-        PluginRegistry.instance().getJavaPluginByName().put("contacts", booter);
+
+
 
     }
 

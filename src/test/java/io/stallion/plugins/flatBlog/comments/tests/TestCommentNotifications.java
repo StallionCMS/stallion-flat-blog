@@ -2,6 +2,9 @@ package io.stallion.plugins.flatBlog.comments.tests;
 
 
 import io.stallion.asyncTasks.AsyncCoordinator;
+import io.stallion.asyncTasks.AsyncTask;
+import io.stallion.asyncTasks.AsyncTaskController;
+import io.stallion.asyncTasks.AsyncTaskExecuteRunnable;
 import io.stallion.dal.DalRegistry;
 import io.stallion.email.EmailSender;
 import io.stallion.plugins.PluginRegistry;
@@ -9,15 +12,18 @@ import io.stallion.plugins.flatBlog.comments.CommentsEndpoints;
 import io.stallion.plugins.flatBlog.comments.Comment;
 import io.stallion.plugins.flatBlog.comments.CommentSubscriptionInfo;
 import io.stallion.plugins.flatBlog.comments.NewCommentEmailHandler;
-import io.stallion.plugins.flatBlog.contacts.Notification;
-import io.stallion.plugins.flatBlog.contacts.NotificationController;
-import io.stallion.plugins.flatBlog.contacts.SubscriptionFrequency;
+import io.stallion.plugins.flatBlog.contacts.*;
 import io.stallion.plugins.flatBlog.FlatBlogPlugin;
+import io.stallion.services.Log;
 import io.stallion.testing.AppIntegrationCaseBase;
 import io.stallion.testing.StubHandler;
 import io.stallion.testing.Stubbing;
+import io.stallion.utils.DateUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,21 +34,215 @@ import static org.junit.Assert.assertTrue;
 
 
 public class TestCommentNotifications extends AppIntegrationCaseBase {
-
+    private static Long parentId = 0L;
+    private Contact john = null;
+    private CommentsEndpoints resource = null;
 
     @BeforeClass
     public static void setUpClass() throws Exception {
         startApp("/blog_plugin_site");
-        PluginRegistry.instance().loadPluginFromBooter(new FlatBlogPlugin());
+        FlatBlogPlugin booter = new FlatBlogPlugin();
+        PluginRegistry.instance().loadPluginFromBooter(booter);
+        booter.boot();
+
+        Stubbing.stub(CommentsEndpoints.class, "checkRECaptcha");
+        Stubbing.stub(CommentsEndpoints.class, "checkAkismet");
+        Stubbing.stub(NewCommentEmailHandler.class, "enqueue");
+
+
+        parentId = DalRegistry.instance().getTickets().nextId();
+
+
+
+
+    }
+
+    @Before
+    public void setUp() throws Exception {
+        resource = new CommentsEndpoints();
+        resource.submitComment(newComment("test.john@stallion.io", "John Doe", "First!"));
+        john = ContactsController.instance().forUniqueKeyOrNotFound("email", "test.john@stallion.io");
+    }
+
+    @Test
+    public void testThreadSubscribe() throws Exception {
+        CommentsEndpoints resource = new CommentsEndpoints();
+        Long now = mils() - 2000;
+
+        // Submit initial comment from Peter, no notifications yet.
+        String peterEmail = "test.peter" + DateUtils.mils() + "@stallion.io";
+        resource.submitComment(
+                newComment(peterEmail, "Peter", "I eagerly await further thoughts!")
+                .setThreadSubscribe(true)
+        );
+        Contact peter = ContactsController.instance().forUniqueKeyOrNotFound("email", peterEmail);
+        Assert.assertEquals(0, NotificationController.instance().filter("createdAt", now, ">").filter("contactId", john.getId()).count());
+        Assert.assertEquals(0, NotificationController.instance().filter("createdAt", now, ">").filter("contactId", peter.getId()).count());
+
+        // Add two comments
+        resource.submitComment(
+                newComment("test.sam@stallion.io", "Sam", "This is an insightful thought.")
+        );
+        resource.submitComment(
+                newComment("test.shannon@stallion.io", "Shannon", "This is an incredible thing.")
+        );
+
+
+        // Assert tasks and notifications created
+        assertTrue(AsyncCoordinator.instance().getPendingTaskCount() > 0);
+        List<Notification> notifications = NotificationController
+                .instance()
+                .filter("createdAt", now, ">")
+                .filter("contactId", peter.getId())
+                .all();
+        Assert.assertEquals(2, notifications.size());
+        Assert.assertEquals(notifications.get(0).getSendAt(), notifications.get(1).getSendAt());
+
+        Notification notification = notifications.get(0);
+        String customKey = "notification---" + notification.getSendAt() + "---" + notification.getContactId();
+        Assert.assertTrue(AsyncCoordinator.instance().hasPendingTaskWithCustomKey(customKey));
+
+        // Now try running the task for Peter, the user with a daily email
+        // Should get 1 email with 2 comments in it
+
+        MockEmailer mockEmailer = new MockEmailer();
+        Stubbing.stub(EmailSender.class, "executeSend", mockEmailer);
+
+
+        AsyncTask task = AsyncTaskController.instance().forUniqueKey("customKey", customKey);
+        AsyncTaskExecuteRunnable runnable = new AsyncTaskExecuteRunnable(task);
+        runnable.run(true);
+
+        // Should be an email sent with two comments in it
+        assertEquals(1, mockEmailer.getEmails().size());
+        assertEquals(peterEmail, mockEmailer.getEmails().get(0).getAddress());
+        Log.info("Notify email body: {0}", mockEmailer.getEmails().get(0).getBody());
+        assertEquals(2, StringUtils.countMatches(mockEmailer.getEmails().get(0).getBody(), "class=\"comment-bodyHtml\""));
+
+
 
     }
 
 
+    @Test
+    public void testMentionSubscribe() throws Exception {
+        CommentsEndpoints resource = new CommentsEndpoints();
+        Long now = mils() - 2000;
+
+        resource.submitComment(
+                newComment("test.jack@stallion.io", "Jack O'Connor", "I hope someone replies to me and mentions me!")
+                        .setMentionSubscribe(true)
+        );
+
+        Assert.assertEquals(0, NotificationController.instance().filter("createdAt", now, ">").filter("contactId", john.getId()).count());
+
+        resource.submitComment(
+                newComment("test.jamie@stallion.io", "Jamie", "Hey @\"Jack O'Connor\", I will reply to you.")
+        );
+
+        resource.submitComment(
+                newComment("test.jody@stallion.io", "Jody", "Hey @Jack, not a reply.")
+        );
+
+        Contact jack = ContactsController.instance().forUniqueKeyOrNotFound("email", "test.jack@stallion.io");
+
+
+        List<Notification> notifications = NotificationController.instance().filter("createdAt", now, ">").filter("contactId", jack.getId()).all();
+        Assert.assertEquals(1, notifications.size());
+
+
+        String customKey = "notification---" + notifications.get(0).getSendAt() + "---" + notifications.get(0).getContactId();
+        assertTrue(AsyncCoordinator.instance().getPendingTaskCount() > 0);
+        Assert.assertTrue(AsyncCoordinator.instance().hasPendingTaskWithCustomKey(customKey));
+
+    }
+
+
+    @Test
+    public void testMentionEmails() throws Exception {
+        CommentsEndpoints resource = new CommentsEndpoints();
+        Long now = mils() - 2000;
+
+        // Initial comment
+        String timEmail = "test.tim." + now + "@stallion.io";
+        resource.submitComment(
+                newComment(timEmail, "Timothy", "I hope someone replies to me and mentions me!")
+                        .setMentionSubscribe(true)
+        );
+        Contact tim = ContactsController.instance().forUniqueKeyOrNotFound("email", timEmail);
+        // No notifications yet
+        Assert.assertEquals(0, NotificationController.instance().filter("createdAt", now, ">").filter("contactId", john.getId()).count());
+        Assert.assertEquals(0, NotificationController.instance().filter("createdAt", now, ">").filter("contactId", tim.getId()).count());
+
+        // Two people reply to Timothy, one additional comment
+        resource.submitComment(
+                newComment("test.sherry@stallion.io", "Sherry", "Hey @Timothy, I will reply to you.")
+        );
+        resource.submitComment(
+                newComment("test.travis@stallion.io", "Travis", "Hey @Timothy, have a second reply.")
+        );
+        resource.submitComment(
+                newComment("test.mike@stallion.io", "Mike", "This is an unrelated comment.")
+        );
+
+        // Two notifications, with the same send time
+        List<Notification> notifications = NotificationController
+                .instance()
+                .filter("createdAt", now, ">")
+                .filter("contactId", tim.getId())
+                .all();
+        Assert.assertEquals(2, notifications.size());
+        Assert.assertEquals(notifications.get(0).getSendAt(), notifications.get(1).getSendAt());
+
+        // Verify pending task
+        Notification notification = notifications.get(0);
+        String customKey = "notification---" + notification.getSendAt() + "---" + notification.getContactId();
+        assertTrue(AsyncCoordinator.instance().getPendingTaskCount() > 0);
+        Assert.assertTrue(AsyncCoordinator.instance().hasPendingTaskWithCustomKey(customKey));
+
+
+
+        // Now try running the task for 'three', the user with a daily email
+        // Should get 1 email with 2 comments in it
+
+        MockEmailer mockEmailer = new MockEmailer();
+        Stubbing.stub(EmailSender.class, "executeSend", mockEmailer);
+
+
+        AsyncTask task = AsyncTaskController.instance().forUniqueKey("customKey", customKey);
+        AsyncTaskExecuteRunnable runnable = new AsyncTaskExecuteRunnable(task);
+        runnable.run(true);
+
+        // Should be an email sent with two comments in it
+        assertEquals(1, mockEmailer.getEmails().size());
+        assertEquals(timEmail, mockEmailer.getEmails().get(0).getAddress());
+        Log.info("Notify email body: {0}", mockEmailer.getEmails().get(0).getBody());
+        assertEquals(2, StringUtils.countMatches(mockEmailer.getEmails().get(0).getBody(), "class=\"comment-bodyHtml\""));
+
+
+    }
+
+
+
+    public Comment newComment(String email, String displayName, String bodyHtml) {
+        Comment cmt = new Comment()
+                .setAuthorEmail(email)
+                .setAuthorDisplayName(displayName)
+                .setBodyMarkdown(bodyHtml)
+                .setBodyHtml(bodyHtml);
+        cmt.setParentTitle("Test Post");
+        cmt.setThreadId(parentId);
+        cmt.setModeratedAt(mils());
+        cmt.setAkismetApproved(true);
+        cmt.setParentPermalink("theparentpermalink");
+        cmt.setMentionSubscribe(false);
+        cmt.setThreadSubscribe(false);
+        return cmt;
+    }
+
+    /*
     //@Test
     public void testNotifications() throws Exception {
-        Stubbing.stub(CommentsEndpoints.class, "checkRECaptcha");
-        Stubbing.stub(CommentsEndpoints.class, "checkAkismet");
-        Stubbing.stub(NewCommentEmailHandler.class, "enqueue");
         MockEmailer mockEmailer = new MockEmailer();
         Stubbing.stub(EmailSender.class, "executeSend", mockEmailer);
 
@@ -114,7 +314,7 @@ public class TestCommentNotifications extends AppIntegrationCaseBase {
         Long now = mils() - 2000;
 
         CommentsEndpoints resource = new CommentsEndpoints();
-
+        /*
         one = resource.submitComment(one);
         resource.updateCommentSubscriptions(one, oneSub);
 
@@ -196,8 +396,9 @@ public class TestCommentNotifications extends AppIntegrationCaseBase {
         assertEquals("testing+two@stallion.io", mockEmailer.getEmails().get(0).getAddress());
         Log.info("Notify email body: {0}", mockEmailer.getEmails().get(0).getBodyHtml());
         assertEquals(6, StringUtils.countMatches(mockEmailer.getEmails().get(0).getBodyHtml(), "class=\"comment-body\""));
-         */
+
     }
+    */
 
     static class EmailInfo {
         private String address;

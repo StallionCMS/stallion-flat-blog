@@ -1,6 +1,6 @@
 {% extends "stallion:admin/base-scaffold.jinja" %}
 {% block extra_head %}
-<link href="/_stx/contacts/assets/subscriptions.css" rel="stylesheet" />
+<link href="/_stx/flatBlog/assets/subscriptions.css" rel="stylesheet" />
 {% endblock %}
 {% block body_content %}
 <div id="st-comments-dashboard-content" class="container">
@@ -27,6 +27,6 @@
       contact: {{ contact }}
   }
 </script>
-<script type="text/jsx" src="/_stx/contacts/assets/my-subscriptions.jsx")></script>
+<script type="text/jsx" src="/st-resource/flatBlog/my-subscriptions.jsx?processor=jsx")></script>
 {% endblock %}
 

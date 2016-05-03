@@ -140,7 +140,19 @@ public class FlatBlogPlugin extends StallionJavaPlugin {
                 )
         );
         TemplateRenderer.instance().getJinjaTemplating().registerTag(new CommentsTag());
+
+        DefinedBundle.register(new DefinedBundle(
+                "commentsAdminStylesheets", ".css",
+                new BundleFile().setPluginName("flatBlog").setLiveUrl("comments-manage.css")
+        ));
+        DefinedBundle.register(new DefinedBundle(
+                "commentsAdminJavascripts", ".js",
+                new BundleFile().setPluginName("flatBlog").setLiveUrl("comments-manage.js")
+        ));
+
         Log.info("Comments boot complete");
+
+
     }
 }
 
