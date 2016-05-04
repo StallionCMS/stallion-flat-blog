@@ -62,6 +62,7 @@ public class ContactsEndpoints implements EndpointResource {
         List<Subscription> subscriptions = SubscriptionController.instance().filter("contactId", contact.getId()).all();
         ctx.put("subscriptionsSafeJson", Sanitize.htmlSafeJson(subscriptions));
         ctx.put("contact", Sanitize.htmlSafeJson(contact, "owner"));
+        ctx.put("secretToken", Sanitize.htmlSafeJson(contact.getSecretToken()));
         Log.info("Subscriptions contactEmail={0} contactId={1} subs-count={2}", contact.getEmail(), contact.getId(), subscriptions.size());
         return TemplateRenderer.instance().renderTemplate(url.toString(), ctx);
     }
@@ -143,28 +144,6 @@ public class ContactsEndpoints implements EndpointResource {
     }
 
 
-    @GET
-    @Path("/contacts/assets/:path")
-    public String dashboardJsx(@PathParam("path") String path) throws IOException {
-        if (StringUtils.countMatches(path, ".") > 1) {
-            throw new UsageException("Invalid asset file path: " + path);
-        }
-        URL url = getClass().getResource("/assets/" + path);
-        if (url == null) {
-            throw new io.stallion.exceptions.NotFoundException("Missing file path: " + path);
-        }
-        if (Settings.instance().getDevMode() && url.toString().contains("/target/classes/")) {
-            String newPath = url.toString().replace("/target/classes/", "/src/main/resources/");
-            url = new URL(newPath);
-
-        }
-        if (path.endsWith(".css")) {
-            Context.getResponse().setContentType("text/css");
-        } else {
-            Context.getResponse().setContentType("text/javascript");
-        }
-        return org.apache.commons.io.IOUtils.toString(url);
-    }
 
     @POST
     @Path("/contacts/submit-form")

@@ -1,6 +1,0 @@
-h4 Recent Posts
-{% for post in postsFilter.sort('publishDate', 'desc').pager(0, 5).items %}
-  <div>
-    <a href="{{ post.slug }}">{{post.title}}</a>
-  </div>
-{% endfor %}

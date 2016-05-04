@@ -38,7 +38,7 @@ public class CommentsTag implements Tag {
         //jinjavaInterpreter.getContext().put()
         try {
 
-            String commentsTagUrl = AssetsController.instance().resource("comment-riot-tag.tag", "flatBlog");
+            String commentsTagUrl = AssetsController.instance().resource("comments-public-riot.tag", "flatBlog");
             Context.getResponse().getPageFooterLiterals().addString("<script src=\"" + commentsTagUrl + "\" type=\"riot/tag\"></script>");
             Context.getResponse().getPageFooterLiterals().addDefinedBundle("flatBlog:public.js");
 
@@ -68,7 +68,7 @@ public class CommentsTag implements Tag {
             context.put("commentsContext", commentsContext);
             context.put("reCaptchaSiteKey", FlatBlogSettings.getInstance().getReCaptchaSiteKey());
 
-            return TemplateRenderer.instance().renderTemplate("flatBlog:comments-for-thread.jinja", context);
+            return TemplateRenderer.instance().renderTemplate("flatBlog:comments-section-for-post.jinja", context);
         } catch (RuntimeException e) {
             Log.exception(e, "Error rendering comment thread tag.");
             throw e;

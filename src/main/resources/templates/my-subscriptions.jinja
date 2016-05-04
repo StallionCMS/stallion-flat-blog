@@ -1,6 +1,6 @@
 {% extends "stallion:admin/base-scaffold.jinja" %}
 {% block extra_head %}
-<link href="/_stx/flatBlog/assets/subscriptions.css" rel="stylesheet" />
+<link href="{{ assets.resource('my-subscriptions.css', 'flatBlog') }}" rel="stylesheet" />
 {% endblock %}
 {% block body_content %}
 <div id="st-comments-dashboard-content" class="container">
@@ -8,10 +8,8 @@
     <div class="col-md-2">
     </div>
     <div class="col-md-8">
-      <h1>Subscriptions</h1>
-      <div id="example"></div>
       <div id="subscriptions-table-wrap">
-
+            <my-subscriptions></my-subscriptions>
       </div>
     </div>
     <div class="col-md-2">
@@ -23,10 +21,18 @@
 {% block pre_end_body %}
 <script type="text/javascript">
   window.st_contacts_context = {
+      secretToken: {{ secretToken }},
       subscriptions: {{ subscriptionsSafeJson }},
       contact: {{ contact }}
   }
 </script>
-<script type="text/jsx" src="/st-resource/flatBlog/my-subscriptions.jsx?processor=jsx")></script>
+<script src="{{ assets.resource('my-subscriptions-riot.tag', 'flatBlog') }}" type="riot/tag"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    riot.compile(function() {
+      stMySubscriptions.init();
+    });
+  });
+</script>
 {% endblock %}
 

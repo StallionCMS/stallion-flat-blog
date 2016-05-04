@@ -270,7 +270,7 @@ public class CommentsEndpoints implements EndpointResource {
     @Produces("text/html")
     @MinRole(Role.STAFF)
     public Object adminDashboard() throws Exception {
-        URL url = getClass().getClassLoader().getResource("templates/comments-admin-dashboard.jinja");
+        URL url = getClass().getClassLoader().getResource("templates/comments-manage-dashboard.jinja");
         Context.getResponse().getMeta().setTitle("Comments Dashboard");
         return TemplateRenderer.instance().renderTemplate(url.toString());
     }
