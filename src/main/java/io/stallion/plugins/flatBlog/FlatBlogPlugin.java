@@ -55,7 +55,7 @@ public class FlatBlogPlugin extends StallionJavaPlugin {
 
     @Override
     public List<? extends StallionRunAction> getActions() {
-        return list(new NewPostRunAction());
+        return list(new NewPostRunAction(), new NewFlatBlogSiteAction());
     }
 
     @Override
@@ -81,18 +81,9 @@ public class FlatBlogPlugin extends StallionJavaPlugin {
             List<JavaRestEndpoint> endpointList = converter.convert(resource);
             JavaRestEndpoint[] endpointArray = endpointList.toArray(new JavaRestEndpoint[0]);
             EndpointsRegistry.instance().addEndpoints(endpointArray);
-            if (config.getTemplateFolder() == null) {
-                config.setTemplateFolder("flatBlog");
-            }
-            String postTemplate = config.getTemplatePath("post");
 
             SiteMapController.instance().addItem(new SiteMapItem().setPermalink(Settings.instance().getSiteUrl() + rootUrl));
-
-
             config.setBucket(config.getFolder());
-            if (StringUtils.isEmpty(config.getId())) {
-                config.setId(config.getFolder());
-            }
             DalRegistration registration = new DalRegistration()
                     .setModelClass(BlogPost.class)
                     .setControllerClass(BlogPostController.class)
@@ -100,7 +91,7 @@ public class FlatBlogPlugin extends StallionJavaPlugin {
                     .setShouldWatch(true)
                     .setUseDataFolder(false)
                     .setPersisterClass(TextFilePersister.class)
-                    .setTemplatePath(postTemplate)
+                    .setTemplatePath(config.getPostTemplate())
                     .setWritable(false);
             Context.dal().registerDal(registration);
 

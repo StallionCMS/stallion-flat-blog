@@ -1,0 +1,17 @@
+
+# Get an akismet account and put in the key here for automatic spam filtering -- https://akismet.com/
+#akismetKey = ""
+# Automatically close comments on posts after these number of days
+#commentsClosedAfterDays = 23
+# Get an reCaptcha account to help prevent spam -- https://www.google.com/recaptcha/intro/index.html
+#reCaptchaSecret = ""
+#reCaptchaSiteKey = ""
+# If comment moderation is on, who should get moderation emails?
+#moderatorEmails = ["someone@somwehere.com"]
+#notifyEmails = ["maker@stallion.io"]
+
+[[blogs]]
+rootUrl = "{{ builder.rootUrl }}"
+folder = "posts"
+listingTemplate = "blog.listing.jinja"
+postTemplate = "blog.post.jinja"

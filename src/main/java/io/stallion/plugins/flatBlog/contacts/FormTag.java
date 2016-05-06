@@ -26,7 +26,7 @@ public class FormTag implements Tag {
     public String interpret(TagNode tagNode, JinjavaInterpreter jinjavaInterpreter) {
         StringBuilder builder = new StringBuilder();
 
-        builder.append("<form id='stallion-contact-form' class=\"pure-form st-contacts-form\">");
+        builder.append("<form id='stallion-contact-form' class=\"pure-form pure-form-stacked st-contacts-form\">");
         for(Node node:tagNode.getChildren()) {
             builder.append(node.render(jinjavaInterpreter));
         }

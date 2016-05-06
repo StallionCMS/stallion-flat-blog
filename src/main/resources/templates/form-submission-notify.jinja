@@ -1,19 +1,24 @@
 
-<h4>Submission Information</h4>
 <table>
     <tr>
         <td colspan="2"><h4>Submission Information</h4></td>
     </tr>
+    {% for entry in submission.data.entrySet() %}
     <tr>
-        <td>Page title</td>
-        <td>{{ submission.pageTitle }}</td>
+        <td><span class="color: #888; font-weight: bold;"{{ entry.key }}:&nbsp;&nbsp;</td>
+        <td>{{ entry.value }}</td>
+    </tr>
+    {% endfor %}
+    <tr>
+        <td>Page:</td>
+        <td><a href="{{ submission.pageUrl|e }}">{{ submission.pageTitle|e }}</a></td>
     </tr>
     <tr>
         <td colspan="2"><h4>Contact Information</h4></td>
     </tr>
     <tr>
         <td>Email</td>
-        <td>{{ contact.email }}</td>
+        <td>{{ contact.email|e }}</td>
     </tr>
 </table>
 

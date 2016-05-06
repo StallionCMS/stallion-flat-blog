@@ -1,0 +1,17 @@
+{% extends "base.jinja" %}
+{% block main_body %}
+<div class="posts">
+    {% for post in postsPager.items %}
+    <section class="post">
+        <header class="post-header">
+            <h2 class="post-title"><a href="{{ post.slug }}">{{ post.title }}</a></h2>
+            <div class="post-byline">{% if post.author %}by {{ post.author }} at{% endif %} {{ utils.formatLocalDate(post.publishDate) }}</div>
+        </header>
+        <div class="post-description">
+            {{ post.summary }}
+            <div><a href="{{ post.slug }}">Read more</a></div>
+        </div>
+    </section>
+    {% endfor %}
+</div><!--end posts-->
+{% endblock %}

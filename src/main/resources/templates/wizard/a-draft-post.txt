@@ -1,0 +1,11 @@
+A Draft Post
+=====================================
+publishDate: 2999-05-01 11:15:00 America/New_York
+slug: /blog/a-draft-post
+id: 146247049800013
+previewKey: zj7v6oMa
+author: Stallion Wizard
+metaDescription: A draft post
+
+I am a draft blog post. You can preview me at http://localhost:8090/blog/a-draft-post?stPreview=zj7v6oMa When you are ready to publish me, simply change the "publishDate" to the current date.
+

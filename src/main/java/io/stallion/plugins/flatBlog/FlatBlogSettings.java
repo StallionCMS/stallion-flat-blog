@@ -52,6 +52,7 @@ public class FlatBlogSettings extends BasePluginSettings {
 
     @SettingMeta(val="blog_posts")
     private String blogPostTableName;
+
     @SettingMeta(cls=ArrayList.class)
     private List<BlogConfig> blogs;
 
@@ -66,8 +67,8 @@ public class FlatBlogSettings extends BasePluginSettings {
         int x = 0;
         for (BlogConfig config: getBlogs()) {
             x++;
-            if (StringUtils.isEmpty(config.getFolder()) && StringUtils.isEmpty(config.getTable())) {
-                throw new ConfigException("No folder or table defined for flatBlog config #" + x);
+            if (StringUtils.isEmpty(config.getFolder())) {
+                throw new ConfigException("No folder defined for flatBlog config #" + x);
             }
 
         }

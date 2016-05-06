@@ -20,8 +20,11 @@ import io.stallion.asyncTasks.AsyncTaskHandlerBase;
 import io.stallion.dal.base.Model;
 import io.stallion.plugins.flatBlog.FlatBlogSettings;
 import io.stallion.services.Log;
+import io.stallion.settings.Settings;
 import io.stallion.users.User;
 import io.stallion.users.UserController;
+
+import java.util.List;
 
 
 public class FormSubmissionEmailTaskHandler extends AsyncTaskHandlerBase {
@@ -41,8 +44,15 @@ public class FormSubmissionEmailTaskHandler extends AsyncTaskHandlerBase {
             Log.info("Contact is null!! for contact id {0}", submission.getContactId());
             contact = new Contact().setEmail(submission.getEmail());
         }
-        Log.info("Mail submission to to moderators submission={0} moderators={1}", submission.getId(), FlatBlogSettings.getInstance().getNotifyEmails());
-        for(String email: FlatBlogSettings.getInstance().getNotifyEmails()) {
+        if (Settings.instance().getEmail() == null) {
+            Log.warn("Cannot send form submission email because email is not configured!");
+        }
+        List<String> notifyEmails = FlatBlogSettings.getInstance().getNotifyEmails();
+        if (notifyEmails.size() == 0) {
+            notifyEmails = Settings.instance().getEmail().getAdminEmails();
+        }
+        Log.info("Mail submission to to moderators submission={0} moderators={1}", submission.getId(), notifyEmails);
+        for(String email: notifyEmails) {
             Model m = null;
             if (UserController.instance() != null) {
                 m = UserController.instance().forUniqueKey("email", email);
@@ -54,7 +64,7 @@ public class FormSubmissionEmailTaskHandler extends AsyncTaskHandlerBase {
                 user = (User)m;
             }
             FormSubmissionEmailer emailer = new FormSubmissionEmailer(user, submission, contact);
-            Log.info("Send moderation email. submission={0} moderator={0}", submission.getId(), user.getEmail());
+            Log.info("Send form submission email. submission={0} moderator={0}", submission.getId(), user.getEmail());
             emailer.sendEmail();
         }
     }

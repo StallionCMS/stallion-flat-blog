@@ -90,7 +90,7 @@ public class Endpoints implements EndpointResource {
         if (pager.getItems().size() == 0) {
             Context.getResponse().setStatus(404);
         }
-        return TemplateRenderer.instance().renderTemplate(config.getTemplatePath("listing"), context);
+        return TemplateRenderer.instance().renderTemplate(config.getListingTemplate(), context);
     }
 
     @GET
@@ -134,7 +134,7 @@ public class Endpoints implements EndpointResource {
                 .sort("publishDate", "desc")
                 .pager(0, 5000);
         context.put("postsPager", pager);
-        return TemplateRenderer.instance().renderTemplate(config.getTemplatePath("listing"), context);
+        return TemplateRenderer.instance().renderTemplate(config.getListingTemplate(), context);
 
     }
 
@@ -148,6 +148,6 @@ public class Endpoints implements EndpointResource {
                 .sort("publishDate", "desc")
                 .pager(0, 5000);
         context.put("postsPager", pager);
-        return TemplateRenderer.instance().renderTemplate(config.getTemplatePath("listing"), context);
+        return TemplateRenderer.instance().renderTemplate(config.getListingTemplate(), context);
     }
 }

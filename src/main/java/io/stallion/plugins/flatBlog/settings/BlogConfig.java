@@ -20,22 +20,13 @@ import org.apache.commons.lang3.StringUtils;
 public class BlogConfig {
     private String rootUrl = "/";
     private String folder;
-    private String table;
-    private String id = "";
-    private String templateFolder;
+    private String listingTemplate = "blog.post.jinja";
+    private String postTemplate = "blog.listing.jinja";
     private String bucket;
-    private Boolean useDatabase = null;
     private String title = "";
     private String metaDescription = "";
     private int postsPerPage = 10;
 
-    public String getTemplatePath(String type) {
-        String path = templateFolder + "/" + type + ".jinja";
-        if (path.startsWith("/")) {
-            path = path.substring(1);
-        }
-        return path;
-    }
 
     public String getRootUrl() {
         return rootUrl;
@@ -53,36 +44,8 @@ public class BlogConfig {
         this.folder = folder;
     }
 
-    public String getTable() {
-        return table;
-    }
 
-    public void setTable(String table) {
-        this.table = table;
-    }
 
-    public String getId() {
-        if (StringUtils.isEmpty(id)) {
-            if (StringUtils.isEmpty(folder)) {
-                return table;
-            } else {
-                return folder;
-            }
-        }
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getTemplateFolder() {
-        return templateFolder;
-    }
-
-    public void setTemplateFolder(String templateFolder) {
-        this.templateFolder = templateFolder;
-    }
 
     public String getBucket() {
         return bucket;
@@ -92,13 +55,7 @@ public class BlogConfig {
         this.bucket = bucket;
     }
 
-    public Boolean getUseDatabase() {
-        return useDatabase;
-    }
 
-    public void setUseDatabase(Boolean useDatabase) {
-        this.useDatabase = useDatabase;
-    }
 
     public String getTitle() {
         return title;
@@ -122,5 +79,23 @@ public class BlogConfig {
 
     public void setPostsPerPage(int postsPerPage) {
         this.postsPerPage = postsPerPage;
+    }
+
+    public String getListingTemplate() {
+        return listingTemplate;
+    }
+
+    public BlogConfig setListingTemplate(String listingTemplate) {
+        this.listingTemplate = listingTemplate;
+        return this;
+    }
+
+    public String getPostTemplate() {
+        return postTemplate;
+    }
+
+    public BlogConfig setPostTemplate(String postTemplate) {
+        this.postTemplate = postTemplate;
+        return this;
     }
 }
