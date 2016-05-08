@@ -26,7 +26,7 @@
       contact: {{ contact }}
   }
 </script>
-<script src="{{ assets.resource('my-subscriptions-riot.tag', 'flatBlog') }}" type="riot/tag"></script>
+<script src="{{ assets.resource('my-subscriptions-riot.tag.js?processor=riot', 'flatBlog') }}" type="text/javascript"></script>
 <script type="text/javascript">
   $(document).ready(function() {
     riot.compile(function() {

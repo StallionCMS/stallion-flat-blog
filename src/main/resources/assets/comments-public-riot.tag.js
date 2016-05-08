@@ -244,6 +244,9 @@ var stCommentThreadPage = new CommentThreadPage();
   </script>
 </comments-dynamic>
 
+
+var ST_COMMENT_CREATED_FORMAT = "mmmm d, yyyy h:mmtt";
+
 <comment>
     <div class={st-comment: true, st-comment-rejected: !comment.approved, st-comment-pending: comment.pending}  data-comment-id={ comment.id } id="st-comment-{comment.id}">
         <a name="st-comment-{ comment.id }"></a>    
@@ -256,7 +259,7 @@ var stCommentThreadPage = new CommentThreadPage();
                 <div class="st-comment-byline">
                     <a if="{comment.authorWebSite}" href="{ comment.authorWebSite }" rel="nofollow">{ comment.authorDisplayName }</a>
                     <span if="{!comment.authorWebSite}">{comment.authorDisplayName}</span>
-                    commented at {new Date(comment.createdTicks).format("mmmm d, yyyy h:mmtt")}
+    commented at {dateFormat(comment.createdTicks,ST_COMMENT_CREATED_FORMAT)}
                 </div>
                 <div class="st-comment-body"><raw name="rawBodyHtml" content="{ comment.bodyHtml }"/></div>
                 <div if={comment.editable && !comment.adminable}>

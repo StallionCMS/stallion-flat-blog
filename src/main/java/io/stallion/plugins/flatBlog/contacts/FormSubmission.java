@@ -18,7 +18,6 @@ package io.stallion.plugins.flatBlog.contacts;
 import io.stallion.dal.base.AlternativeKey;
 import io.stallion.dal.base.ModelBase;
 
-import io.stallion.dal.base.Setable;
 import io.stallion.dal.file.ModelWithFilePath;
 import io.stallion.utils.DateUtils;
 import io.stallion.utils.GeneralUtils;
@@ -26,8 +25,6 @@ import io.stallion.utils.GeneralUtils;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import static io.stallion.dal.base.SettableOptions.*;
 
 public class FormSubmission extends ModelBase implements ModelWithFilePath {
 
@@ -43,7 +40,6 @@ public class FormSubmission extends ModelBase implements ModelWithFilePath {
     private String filePath = "";
 
     @AlternativeKey
-    @Setable(value=Immutable.class, creatable = true)
     public String getEmail() {
         return email;
     }
@@ -74,7 +70,6 @@ public class FormSubmission extends ModelBase implements ModelWithFilePath {
     }
 
 
-    @Setable(value=Immutable.class, creatable = true)
     public Map<String, Object> getData() {
         return data;
     }
@@ -85,7 +80,6 @@ public class FormSubmission extends ModelBase implements ModelWithFilePath {
     }
 
 
-    @Setable(value=Immutable.class, creatable = true)
     public String getFormName() {
         return formName;
     }
@@ -96,7 +90,6 @@ public class FormSubmission extends ModelBase implements ModelWithFilePath {
     }
 
 
-    @Setable(value=Immutable.class, creatable = true)
     public String getPageUrl() {
         return pageUrl;
     }
@@ -106,7 +99,6 @@ public class FormSubmission extends ModelBase implements ModelWithFilePath {
         return this;
     }
 
-    @Setable(value=Immutable.class, creatable = true)
     public String getPageTitle() {
         return pageTitle;
     }
@@ -116,8 +108,7 @@ public class FormSubmission extends ModelBase implements ModelWithFilePath {
         return this;
     }
 
-    @Setable(value=Immutable.class, creatable = true)
-    public String getFormId() {
+        public String getFormId() {
         return formId;
     }
 
@@ -135,7 +126,6 @@ public class FormSubmission extends ModelBase implements ModelWithFilePath {
         return this;
     }
 
-    @Setable(value=Immutable.class, creatable = true)
     public String generateFilePath() {
         return DateUtils.formatLocalDate(getSubmittedAt(), "YYYY-mm-dd-HHmmss-") + GeneralUtils.slugify(getEmail()) + "---" + getId() + ".json";
     }

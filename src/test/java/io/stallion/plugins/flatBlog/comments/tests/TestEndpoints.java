@@ -1,5 +1,7 @@
 package io.stallion.plugins.flatBlog.comments.tests;
 
+import io.stallion.Context;
+import io.stallion.asyncTasks.SimpleAsyncRunner;
 import io.stallion.email.EmailSender;
 import io.stallion.plugins.PluginRegistry;
 import io.stallion.plugins.flatBlog.comments.Comment;
@@ -37,6 +39,27 @@ public class TestEndpoints extends AppIntegrationCaseBase {
 
     }
 
+    /*
+    public class IdMaker implements Runnable {
+        public void run() {
+            for(int x = 0; x<2000;x++ ) {
+                Log.info("Ticket: {0}", Context.dal().getTickets().nextId());
+            }
+        }
+    }
+
+
+    @Test
+    public void testIds() {
+        SimpleAsyncRunner.load();
+        SimpleAsyncRunner.instance().submit(new IdMaker());
+        SimpleAsyncRunner.instance().submit(new IdMaker());
+        SimpleAsyncRunner.instance().submit(new IdMaker());
+        SimpleAsyncRunner.instance().submit(new IdMaker());
+        SimpleAsyncRunner.shutdown();
+    }
+    */
+
     @Test
     public void testCommentController() throws IOException {
         Comment comment = new Comment();
@@ -46,8 +69,12 @@ public class TestEndpoints extends AppIntegrationCaseBase {
         comment.setAuthorEmail(RandomStringUtils.randomAlphanumeric(20) + "@stallion.io");
         comment.setThreadId(910L);
         CommentsController.instance().save(comment);
-
+        Log.info("New comment:        {0} {1}", comment.getId(), comment.getAuthorEmail());
+        Comment retComment = CommentsController.instance().forId(comment.getId());
+        Log.info("Ret comment:        {0} {1}", retComment.getId(), retComment.getAuthorEmail());
         CommentsController.instance().reset();
+        retComment = CommentsController.instance().forId(comment.getId());
+        Log.info("Post-reset comment: {0} {1} {2}", retComment.getId(), retComment.getAuthorEmail(), retComment.getFilePath());
 
         Comment comment2 = CommentsController.instance().filter("authorEmail", comment.getAuthorEmail()).first();
         Assert.assertNotNull(comment2);

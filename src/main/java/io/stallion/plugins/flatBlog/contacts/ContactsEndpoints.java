@@ -17,12 +17,12 @@ package io.stallion.plugins.flatBlog.contacts;
 
 
 import io.stallion.Context;
-import io.stallion.dal.base.Setable;
 import io.stallion.exceptions.*;
 import io.stallion.exceptions.NotFoundException;
 import io.stallion.reflection.PropertyUtils;
-import static io.stallion.dal.base.SettableOptions.*;
 
+
+import io.stallion.requests.validators.SafeMerger;
 import io.stallion.restfulEndpoints.*;
 import io.stallion.services.Log;
 import io.stallion.settings.Settings;
@@ -147,7 +147,13 @@ public class ContactsEndpoints implements EndpointResource {
 
     @POST
     @Path("/contacts/submit-form")
-    public Boolean submitForm(@ObjectParam(targetClass = FormSubmission.class, restricted = Createable.class) FormSubmission submission) {
+    public Boolean submitForm(@ObjectParam FormSubmission rawSubmission) {
+        FormSubmission submission = SafeMerger
+                .with()
+                .nonEmpty("data")
+                .optional("formName", "pageUrl", "pageTitle", "formId")
+                .optionalEmail("email")
+                .merge(rawSubmission);
         Cookie everCookie = Context.request().getCookie("st-evercookie");
         Contact contact = null;
         if (!empty(submission.getEmail())) {
@@ -170,8 +176,7 @@ public class ContactsEndpoints implements EndpointResource {
 
         for(Map.Entry<String, Object> entry: submission.getData().entrySet()) {
             if (PropertyUtils.isWriteable(contact, entry.getKey())) {
-                Setable setable = PropertyUtils.getAnnotationForProperty(Contact.class, entry.getKey(), Setable.class);
-                if (setable != null && setable.creatable()) {
+                if (Contact.SETTABLE_FIELDS.contains(entry.getKey())) {
                     PropertyUtils.setProperty(contact, entry.getKey(), entry.getValue());
                 }
             } else {

@@ -19,7 +19,7 @@ package io.stallion.plugins.flatBlog.contacts;
 import io.stallion.Context;
 import io.stallion.dal.DalRegistry;
 import io.stallion.dal.base.DalRegistration;
-import io.stallion.dal.base.SelfGeneratingId;
+
 import io.stallion.dal.base.StandardModelController;
 import io.stallion.dal.file.JsonFilePersister;
 import io.stallion.utils.GeneralUtils;
@@ -27,7 +27,7 @@ import io.stallion.utils.GeneralUtils;
 import static io.stallion.utils.Literals.*;
 
 
-public class ContactsController extends StandardModelController<Contact> implements SelfGeneratingId<Contact> {
+public class ContactsController extends StandardModelController<Contact>{
 
     public static ContactsController instance() {
         return (ContactsController) Context.dal().get("contacts");

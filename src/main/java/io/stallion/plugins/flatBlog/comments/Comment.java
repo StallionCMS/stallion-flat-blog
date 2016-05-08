@@ -20,6 +20,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.stallion.Context;
+import io.stallion.dal.DalRegistry;
 import io.stallion.dal.base.*;
 import io.stallion.dal.file.ModelWithFilePath;
 import io.stallion.plugins.flatBlog.FlatBlogSettings;
@@ -28,7 +29,6 @@ import io.stallion.utils.DateUtils;
 import io.stallion.utils.GeneralUtils;
 import io.stallion.utils.json.JSON;
 import io.stallion.utils.json.RestrictedViews;
-import static io.stallion.dal.base.SettableOptions.*;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -109,7 +109,6 @@ public class Comment extends ModelBase implements ModelWithFilePath {
     }
 
 
-    @Setable(value = OwnerUpdateable.class, creatable = true)
     public String getAuthorFirstName() {
         return authorFirstName;
     }
@@ -121,7 +120,6 @@ public class Comment extends ModelBase implements ModelWithFilePath {
 
 
 
-    @Setable(value = AnyUpdateable.class, creatable = true)
     public String getAuthorLastName() {
         return authorLastName;
     }
@@ -133,7 +131,6 @@ public class Comment extends ModelBase implements ModelWithFilePath {
 
 
 
-    @Setable(value = AnyUpdateable.class, creatable = true)
     @JsonView(RestrictedViews.Public.class)
     public String getAuthorDisplayName() {
         return authorDisplayName;
@@ -159,7 +156,6 @@ public class Comment extends ModelBase implements ModelWithFilePath {
 
 
     @JsonView(RestrictedViews.Member.class)
-    @Setable(value = Immutable.class, creatable = true)
     public String getAuthorEmail() {
         return authorEmail;
     }
@@ -170,7 +166,6 @@ public class Comment extends ModelBase implements ModelWithFilePath {
     }
 
 
-    @Setable(value = AnyUpdateable.class, creatable = true)
     @JsonView(RestrictedViews.Public.class)
     public String getAuthorWebSite() {
         return authorWebSite;
@@ -238,7 +233,6 @@ public class Comment extends ModelBase implements ModelWithFilePath {
 
 
     @JsonView(RestrictedViews.Public.class)
-    @Setable(value = Immutable.class, creatable = true)
     public Long getParentId() {
         return parentId;
     }
@@ -250,7 +244,6 @@ public class Comment extends ModelBase implements ModelWithFilePath {
 
 
     @JsonView(RestrictedViews.Public.class)
-    @Setable(value = Immutable.class, creatable = true)
     @AlternativeKey
     public Long getThreadId() {
         return threadId;
@@ -270,7 +263,6 @@ public class Comment extends ModelBase implements ModelWithFilePath {
         return this;
     }
 
-    @Setable(value = Immutable.class, creatable = true)
     public String getParentPermalink() {
         return parentPermalink;
     }
@@ -281,7 +273,6 @@ public class Comment extends ModelBase implements ModelWithFilePath {
     }
 
 
-    @Setable(value = Immutable.class, creatable = true)
     public String getCaptchaResponse() {
         return captchaResponse;
     }
@@ -353,11 +344,14 @@ public class Comment extends ModelBase implements ModelWithFilePath {
     }
 
     public String generateFilePath() {
+        if (empty(getId())) {
+            setId(DalRegistry.instance().getTickets().nextId());
+        }
         String threadId = getThreadId().toString();
         if (threadId.contains(".")) {
             threadId = FilenameUtils.getBaseName(threadId);
         }
-        return threadId + "/" + DateUtils.utcNow().format(formatter) + "-" + GeneralUtils.slugify(getAuthorEmail()) + ".json";
+        return threadId + "/" + DateUtils.utcNow().format(formatter) + "-" + GeneralUtils.slugify(getAuthorEmail()) + "-" + getId() + ".json";
     }
 
     public String getFilePath() {
@@ -382,7 +376,6 @@ public class Comment extends ModelBase implements ModelWithFilePath {
 
 
     @JsonView(RestrictedViews.Public.class)
-    @Setable(value = Immutable.class, creatable = true)
     public String getParentTitle() {
         return parentTitle;
     }
@@ -452,7 +445,6 @@ public class Comment extends ModelBase implements ModelWithFilePath {
     }
 
     @JsonView(RestrictedViews.Member.class)
-    @Setable(value = Immutable.class, creatable = true)
     public Boolean getThreadSubscribe() {
         return threadSubscribe;
     }
@@ -463,7 +455,6 @@ public class Comment extends ModelBase implements ModelWithFilePath {
     }
 
     @JsonView(RestrictedViews.Member.class)
-    @Setable(value = Immutable.class, creatable = true)
     public Boolean getMentionSubscribe() {
         return mentionSubscribe;
     }
@@ -474,7 +465,6 @@ public class Comment extends ModelBase implements ModelWithFilePath {
     }
 
     @JsonView(RestrictedViews.Member.class)
-    @Setable(value = AnyUpdateable.class, creatable = true)
     public String getBodyMarkdown() {
         return bodyMarkdown;
     }

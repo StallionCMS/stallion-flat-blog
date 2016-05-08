@@ -38,8 +38,8 @@ public class CommentsTag implements Tag {
         //jinjavaInterpreter.getContext().put()
         try {
 
-            String commentsTagUrl = AssetsController.instance().resource("comments-public-riot.tag", "flatBlog");
-            Context.getResponse().getPageFooterLiterals().addString("<script src=\"" + commentsTagUrl + "\" type=\"riot/tag\"></script>");
+
+
             Context.getResponse().getPageFooterLiterals().addDefinedBundle("flatBlog:public.js");
 
 

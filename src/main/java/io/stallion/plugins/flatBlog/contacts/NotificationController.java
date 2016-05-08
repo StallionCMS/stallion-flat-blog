@@ -20,7 +20,7 @@ import io.stallion.Context;
 import io.stallion.asyncTasks.AsyncCoordinator;
 import io.stallion.dal.DalRegistry;
 import io.stallion.dal.base.DalRegistration;
-import io.stallion.dal.base.SelfGeneratingId;
+
 import io.stallion.dal.base.StandardModelController;
 import io.stallion.dal.file.JsonFilePersister;
 import io.stallion.exceptions.UsageException;
@@ -36,7 +36,7 @@ import java.time.temporal.ChronoField;
 import static io.stallion.utils.Literals.*;
 
 
-public class NotificationController extends StandardModelController<Notification> implements SelfGeneratingId<Notification> {
+public class NotificationController extends StandardModelController<Notification> {
 
     public static NotificationController instance() {
         return (NotificationController) Context.dal().get("notifications");

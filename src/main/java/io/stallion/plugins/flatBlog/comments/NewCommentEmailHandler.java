@@ -44,7 +44,7 @@ public class NewCommentEmailHandler extends AsyncTaskHandlerBase {
 
 
     public void process() {
-        Comment comment = CommentsController.instance().hardGet(commentId);
+        Comment comment = CommentsController.instance().forIdOrNotFound(commentId);
         List<User> moderators = list();
         Log.info("Mail comment to moderators commentId={0} moderators={1}", commentId, FlatBlogSettings.getInstance().getModeratorEmails());
         for(String email: FlatBlogSettings.getInstance().getModeratorEmails()) {

@@ -34,18 +34,6 @@ import static io.stallion.utils.Literals.*;
 
 public class CommentsController extends StandardModelController<Comment> {
 
-    private static Set<String> commentKeyFields;
-
-    static {
-        commentKeyFields = new HashSet<String>();
-        commentKeyFields.add("threadId");
-    }
-
-
-    public CommentsController() {
-        super();
-    }
-
 
     public static CommentsController instance() {
         return (CommentsController) Context.dal().get("comments");
@@ -307,20 +295,5 @@ public class CommentsController extends StandardModelController<Comment> {
     }
 
 
-
-    public Comment hardGet(Long id) {
-        Comment cmt = forId(id);
-        if (cmt == null) {
-            throw new NotFoundException("Comment not found: " + id);
-        }
-        return cmt;
-    }
-
-
-
-    @Override
-    public Set<String> getKeyFields() {
-        return commentKeyFields;
-    }
 
 }

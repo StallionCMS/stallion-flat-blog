@@ -24,11 +24,9 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import static io.stallion.utils.Literals.*;
-import static io.stallion.dal.base.SettableOptions.*;
 
 import com.mashape.unirest.http.exceptions.UnirestException;
 import io.stallion.Context;
-import io.stallion.dal.base.SettableOptions;
 import io.stallion.dal.filtering.FilterChain;
 import io.stallion.dal.filtering.Pager;
 import io.stallion.exceptions.*;
@@ -37,6 +35,7 @@ import io.stallion.plugins.flatBlog.contacts.Contact;
 import io.stallion.plugins.flatBlog.contacts.ContactsController;
 import io.stallion.plugins.flatBlog.contacts.SubscriptionFrequency;
 import io.stallion.plugins.flatBlog.FlatBlogSettings;
+import io.stallion.requests.validators.SafeMerger;
 import io.stallion.restfulEndpoints.MinRole;
 import io.stallion.restfulEndpoints.EndpointResource;
 import io.stallion.settings.Settings;
@@ -67,30 +66,16 @@ public class CommentsEndpoints implements EndpointResource {
     @POST
     @Path("/comments/submit")
     @JsonView(RestrictedViews.Owner.class)
+    @Produces("application/json")
     public CommentWrapper submitComment(
-            @ObjectParam(name="comment", targetClass = Comment.class, restricted = SettableOptions.Createable.class) Comment comment) throws Exception {
+            @ObjectParam Comment rawComment) throws Exception {
 
-        comment = CommentsController.instance().mergeWithDefaults(comment, null);
+        Comment comment = SafeMerger.with()
+                .nonEmpty("bodyMarkdown", "authorDisplayName", "threadId", "parentPermalink", "parentTitle")
+                .email("authorEmail")
+                .optional("authorFirstName", "authorLastName", "authorWebSite", "captchaResponse", "threadSubscribe", "mentionSubscribe")
+                .merge(rawComment);
 
-
-        if (StringUtils.isEmpty(comment.getBodyMarkdown())) {
-            throw new ClientException("You forgot to enter a comment body!", 422);
-        }
-        if (StringUtils.isEmpty(comment.getAuthorEmail()) || !comment.getAuthorEmail().contains("@")) {
-            throw new ClientException("You did not enter a valid email address!", 422);
-        }
-        if (StringUtils.isEmpty(comment.getAuthorDisplayName())) {
-            throw new ClientException("You did not enter a display name!", 422);
-        }
-        if (empty(comment.getThreadId())) {
-            throw new ClientException("Invalid thread id!", 422);
-        }
-        if (empty(comment.getParentPermalink())) {
-            throw new ClientException("Must include a permalink for the parent.", 422);
-        }
-        if (empty(comment.getParentTitle())) {
-            throw new ClientException("Must include the parent title.");
-        }
 
         checkRECaptcha(comment);
         checkAkismet(comment);
@@ -99,6 +84,7 @@ public class CommentsEndpoints implements EndpointResource {
         if (comment.isApproved()) {
             CommentsController.instance().postCommentApproved(comment);
         }
+        Log.info("Submmited comment {0} {1}", comment.getAuthorEmail(), comment.getId());
         return CommentsController.instance().forId(comment.getId()).toWrapper(true);
     }
 
@@ -306,7 +292,7 @@ public class CommentsEndpoints implements EndpointResource {
     ) throws JsonProcessingException
 
     {
-        Comment comment = CommentsController.instance().hardGet(commentId);
+        Comment comment = CommentsController.instance().forIdOrNotFound(commentId);
         if (!comment.isEditable()) {
             throw new ClientException("You do not have permission to edit this comment", 403);
         }
@@ -327,8 +313,8 @@ public class CommentsEndpoints implements EndpointResource {
     @POST
     @Path("/comments/update-comment-subscriptions")
     public CommentSubscriptionInfo updateCommentSubscriptions(@QueryParam("commentId") Long commentId,
-                                             @ObjectParam(targetClass = CommentSubscriptionInfo.class, restricted = SettableOptions.Unrestricted.class) CommentSubscriptionInfo subscriptionInfo) {
-        Comment comment = CommentsController.instance().hardGet(commentId);
+                                             @ObjectParam(targetClass = CommentSubscriptionInfo.class) CommentSubscriptionInfo subscriptionInfo) {
+        Comment comment = CommentsController.instance().forIdOrNotFound(commentId);
         if (!comment.isEditable()) {
             throw new ClientException("You do not have permission to edit this comment", 403);
         }
@@ -346,14 +332,18 @@ public class CommentsEndpoints implements EndpointResource {
     @Path("/comments/:id/revise")
     public Object reviseComment(
             @PathParam("id") Long id,
-            @ObjectParam(name="comment", targetClass = Comment.class, restricted=AnyUpdateable.class)
-            Comment revisedComment) throws Exception {
+            @ObjectParam Comment revisedComment) throws Exception {
         // Either, Auth level is staff or the author wrote the comment
-        Comment existing = CommentsController.instance().hardGet(id);
+        Comment existing = CommentsController.instance().forIdOrNotFound(id);
         if (!Context.getUser().isInRole(Role.STAFF) && !existing.isEditable()) {
             throw new ClientException("You do not have permission to edit this comment", 403);
         }
-        revisedComment = CommentsController.instance().mergeDetached(id, revisedComment);
+        revisedComment = SafeMerger.with()
+                .optional("authorDisplayName", "authorFirstName", "authorLastName",
+                        "authorWebSite", "bodyMarkdown"
+                        )
+                .optionalEmail("authorEmail")
+                .merge(revisedComment, existing);
         CommentsController.instance().save(revisedComment);
         return revisedComment.toWrapper();
     }
@@ -362,7 +352,7 @@ public class CommentsEndpoints implements EndpointResource {
     @MinRole(Role.STAFF)
     @Path("/comments/:id/delete")
     public Object deleteComment(@PathParam("id") Long id) {
-        Comment cmt = CommentsController.instance().hardGet(id);
+        Comment cmt = CommentsController.instance().forIdOrNotFound(id);
         if (cmt.isApproved()) {
             cmt.setPreviouslyApproved(true);
         }

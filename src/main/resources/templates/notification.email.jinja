@@ -1,9 +1,14 @@
-<h5>{{ subject }}</h5>
+{% extends "stallion:email/email-base.jinja" %}
+{% block main %}
+<h4>{{ subject }}</h4>
 {% for result in results %}
-  <div class="notification-bodyHtml">
-      {{ result.emailBody }}
-  </div>
+<div class="notification-bodyHtml" style="border-top: 1px solid #CCC; margin-top: 1em;">
+    {{ result.emailBody }}
+</div>
 {% endfor %}
 <hr>
+<br>
 Want fewer emails? <a href="{{ site.url }}/_stx/contacts/my-subscriptions/{{ contact.secretToken }}">Manage your subscriptions or unsubscribe</a>
+{% endblock %}
+
 

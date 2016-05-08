@@ -1,10 +1,11 @@
+{% extends "stallion:email/email-base.jinja" %}
 {% set button_css = "text-decoration: none; color: #333333; display: inline-block; border: 1px solid #999999; padding: 5px; background-color: #F0F0F0;" %}
 {% set button_big_css = "text-decoration: none; color: #333333; display: inline-block; border: 1px solid #999999; padding: 8px; background-color: #F0F0F0; font-size: 16px;" %}
 {% set space_css = "margin-top: 1em; margin-bottom: 1em;" %}
 {% set top_space_css = "margin-top: 1em; margin-bottom: 0em;" %}
 {% set double_space_css = "margin-top: 2em; margin-bottom: 2em;" %}
+{% block main %}
 <h3>New comment on <a href="{{ comment.permaLink }}">{{ comment.parentTitle }}</a></h3>
-
 <h4>
     by {{ comment.authorDisplayName }}
     &nbsp; &nbsp;
@@ -19,9 +20,11 @@
 </div>
 <div style="{{ double_space_css }}">
     {% if comment.approved %}
-        <a style="{{ button_big_css }}" href="{{ rejectPermalink }}">Trash</a>
+        {{ buttonLarge("Trash", rejectPermalink) }}
     {% else %}
-        <a style="{{ button_big_css }}" href="{{ approvePermalink }}">Approve</a> &nbsp; &nbsp;
-        <a style="{{ button_big_css }}" href="{{ rejectPermalink }}">Reject</a>
+        {{ buttonLarge("Approve", approvePermalink) }}
+        {{ buttonLarge("Reject", rejectPermalink) }}
     {% endif %}
 </div>
+
+{% endblock %}

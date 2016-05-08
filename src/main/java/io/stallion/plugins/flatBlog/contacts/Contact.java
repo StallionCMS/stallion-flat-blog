@@ -23,6 +23,10 @@ import io.stallion.email.Contactable;
 import io.stallion.utils.GeneralUtils;
 import io.stallion.utils.json.RestrictedViews;
 
+import java.util.Set;
+
+import static io.stallion.utils.Literals.set;
+
 
 public class Contact extends MappedModel implements ModelWithFilePath, Contactable {
     private String givenName = "";
@@ -43,6 +47,8 @@ public class Contact extends MappedModel implements ModelWithFilePath, Contactab
     private long verifySentAt = 0;
     private long verifyRejectedAt = 0;
     private boolean verifiedEmail = false;
+
+    public final static Set<String> SETTABLE_FIELDS = set("givenName", "familyName", "displayName", "webSite", "honorific");
 
     public String getGivenName() {
         return givenName;

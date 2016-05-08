@@ -19,11 +19,11 @@ import io.stallion.Context;
 import io.stallion.dal.base.DalRegistration;
 
 import io.stallion.dal.base.StandardModelController;
-import io.stallion.dal.base.SelfGeneratingId;
+
 import io.stallion.dal.file.JsonFilePersister;
 
 
-public class FormSubmissionController extends StandardModelController<FormSubmission> implements SelfGeneratingId<FormSubmission> {
+public class FormSubmissionController extends StandardModelController<FormSubmission>{
 
     public static FormSubmissionController instance() {
         return (FormSubmissionController) Context.dal().get("form_submissions");

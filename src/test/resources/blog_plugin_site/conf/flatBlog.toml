@@ -8,3 +8,5 @@ moderatorEmails = ["pat+stallion@pfitz.net"]
 [[blogs]]
 rootUrl = "/blog"
 folder = "my_posts"
+postTemplate = "flatBlog/post.jinja"
+listingTemplate = "flatBlog/listing.jinja"

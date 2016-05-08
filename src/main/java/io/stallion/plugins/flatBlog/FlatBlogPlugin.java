@@ -104,9 +104,8 @@ public class FlatBlogPlugin extends StallionJavaPlugin {
         FormSubmissionController.register();
         SubscriptionController.register();
         NotificationController.register();
-        registerResources(new ContactsEndpoints());
-        registerHookHandlers(new TemplateContextHydrater());
-        // Register
+        EndpointsRegistry.instance().addResource("/_stx/flatBlog", new ContactsEndpoints());
+        HookRegistry.instance().register(new TemplateContextHydrater());
         TemplateRenderer.instance().getJinjaTemplating().registerTag(new FormTag());
         DefinedBundle.getAlwaysFooterJavascripts().add("flatBlog", "contacts-always.js");
     }
@@ -127,7 +126,8 @@ public class FlatBlogPlugin extends StallionJavaPlugin {
         DefinedBundle.register(
                 new DefinedBundle("flatBlog:public.js", ".js",
 
-                        new BundleFile().setPluginName("flatBlog").setLiveUrl("comments-public.js")
+                        new BundleFile().setPluginName("flatBlog").setLiveUrl("comments-public.js"),
+                        new BundleFile().setPluginName("flatBlog").setLiveUrl("comments-public-riot.tag.js").setProcessor("riot")
                 )
         );
         TemplateRenderer.instance().getJinjaTemplating().registerTag(new CommentsTag());
@@ -138,7 +138,8 @@ public class FlatBlogPlugin extends StallionJavaPlugin {
         ));
         DefinedBundle.register(new DefinedBundle(
                 "commentsAdminJavascripts", ".js",
-                new BundleFile().setPluginName("flatBlog").setLiveUrl("comments-manage.js")
+                new BundleFile().setPluginName("flatBlog").setLiveUrl("comments-manage.js"),
+                new BundleFile().setPluginName("flatBlog").setLiveUrl("comments-manage-riot.tag.js").setProcessor("riot")
         ));
 
         Log.info("Comments boot complete");

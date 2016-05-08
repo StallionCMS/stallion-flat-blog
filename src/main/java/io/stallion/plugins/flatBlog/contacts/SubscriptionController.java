@@ -22,7 +22,7 @@ import io.stallion.dal.DalRegistry;
 import io.stallion.dal.base.DalRegistration;
 
 import io.stallion.dal.base.StandardModelController;
-import io.stallion.dal.base.SelfGeneratingId;
+
 import io.stallion.dal.file.JsonFilePersister;
 import io.stallion.plugins.flatBlog.FlatBlogSettings;
 import io.stallion.services.Log;
@@ -32,7 +32,7 @@ import io.stallion.utils.DateUtils;
 import static io.stallion.utils.Literals.*;
 
 
-public class SubscriptionController extends StandardModelController<Subscription> implements SelfGeneratingId<Subscription> {
+public class SubscriptionController extends StandardModelController<Subscription>  {
 
     public static SubscriptionController instance() {
         return (SubscriptionController) Context.dal().get("subscriptions");

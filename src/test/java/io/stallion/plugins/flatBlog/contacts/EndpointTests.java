@@ -22,10 +22,10 @@ import static org.junit.Assert.assertEquals;
 public class EndpointTests extends AppIntegrationCaseBase {
     @BeforeClass
     public static void setUpClass() throws Exception {
-        URL url = EndpointTests.class.getResource("/blog_plugin_site/app-data");
-        if (url != null && url.toString().length() > 10 && new File(url.toString()).isDirectory()) {
-            FileUtils.deleteDirectory(new File(url.toString()));
-        }
+        //URL url = EndpointTests.class.getResource("/blog_plugin_site/app-data");
+        //if (url != null && url.toString().length() > 10 && new File(url.toString()).isDirectory()) {
+        //    FileUtils.deleteDirectory(new File(url.toString()));
+        //}
         startApp("/blog_plugin_site");
         FlatBlogPlugin booter = new FlatBlogPlugin();
         PluginRegistry.instance().loadPluginFromBooter(booter);

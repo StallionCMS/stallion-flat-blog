@@ -90,9 +90,7 @@ public class NotificationEmailer extends ContactEmailer {
 
     @Override
     public String getTemplate() {
-        URL url = getClass().getResource("/templates/contact-notification.jinja");
-        Log.info("Template URL: {0} other={1}", url, getClass().getResource("templates/contact-notification.jinja"));
-        return url.toString();
+        return "flatBlog:/notification.email.jinja";
 
     }
 

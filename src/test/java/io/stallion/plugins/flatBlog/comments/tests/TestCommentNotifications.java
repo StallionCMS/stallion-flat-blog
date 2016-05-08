@@ -117,6 +117,10 @@ public class TestCommentNotifications extends AppIntegrationCaseBase {
         assertEquals(1, mockEmailer.getEmails().size());
         assertEquals(peterEmail, mockEmailer.getEmails().get(0).getAddress());
         Log.info("Notify email body: {0}", mockEmailer.getEmails().get(0).getBody());
+        String body = mockEmailer.getEmails().get(0).getBody();
+        assertTrue(body.contains("/my-subscriptions/"));
+        assertTrue("/my-subscriptions/ contact token is empty", !body.contains("/my-subscriptions/\">"));
+
         assertEquals(2, StringUtils.countMatches(mockEmailer.getEmails().get(0).getBody(), "class=\"comment-bodyHtml\""));
 
 
