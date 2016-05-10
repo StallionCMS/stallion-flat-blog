@@ -90,7 +90,7 @@ public class NotificationEmailer extends ContactEmailer {
 
     @Override
     public String getTemplate() {
-        return "flatBlog:/notification.email.jinja";
+        return "flatBlog:notification.email.jinja";
 
     }
 

@@ -24,10 +24,7 @@ import io.stallion.dal.file.TextFilePersister;
 import io.stallion.hooks.HookRegistry;
 import io.stallion.plugins.StallionJavaPlugin;
 import io.stallion.plugins.flatBlog.blog.*;
-import io.stallion.plugins.flatBlog.comments.CommentsEndpoints;
-import io.stallion.plugins.flatBlog.comments.CommentsContextHook;
-import io.stallion.plugins.flatBlog.comments.CommentsController;
-import io.stallion.plugins.flatBlog.comments.CommentsTag;
+import io.stallion.plugins.flatBlog.comments.*;
 import io.stallion.plugins.flatBlog.contacts.*;
 import io.stallion.plugins.flatBlog.settings.BlogConfig;
 import io.stallion.restfulEndpoints.EndpointsRegistry;
@@ -114,6 +111,8 @@ public class FlatBlogPlugin extends StallionJavaPlugin {
     public void bootComments() throws Exception {
         Log.info("Register comments resources");
         EndpointsRegistry.instance().addResource("/_stx/flatBlog", new CommentsEndpoints());
+        EndpointsRegistry.instance().addResource("/_stx/flatBlog", new SeleniumEndpoints());
+
         Log.info("Register comments pojo folder");
         TargetFolder tf = new TargetFolder().setPath("comments").setWritable(true);
         CommentsController.register();
@@ -125,21 +124,21 @@ public class FlatBlogPlugin extends StallionJavaPlugin {
 
         DefinedBundle.register(
                 new DefinedBundle("flatBlog:public.js", ".js",
-
-                        new BundleFile().setPluginName("flatBlog").setLiveUrl("comments-public.js"),
-                        new BundleFile().setPluginName("flatBlog").setLiveUrl("comments-public-riot.tag.js").setProcessor("riot")
+                new BundleFile().setPluginName("flatBlog").setLiveUrl("comments-public.js"),
+                new BundleFile().setPluginName("flatBlog").setLiveUrl("comments-public-riot.tag").setProcessor("riot")
                 )
         );
         TemplateRenderer.instance().getJinjaTemplating().registerTag(new CommentsTag());
 
         DefinedBundle.register(new DefinedBundle(
                 "commentsAdminStylesheets", ".css",
+                new BundleFile().setPluginName("stallion").setLiveUrl("admin/admin.css"),
                 new BundleFile().setPluginName("flatBlog").setLiveUrl("comments-manage.css")
         ));
         DefinedBundle.register(new DefinedBundle(
                 "commentsAdminJavascripts", ".js",
                 new BundleFile().setPluginName("flatBlog").setLiveUrl("comments-manage.js"),
-                new BundleFile().setPluginName("flatBlog").setLiveUrl("comments-manage-riot.tag.js").setProcessor("riot")
+                new BundleFile().setPluginName("flatBlog").setLiveUrl("comments-manage-riot.tag").setProcessor("riot")
         ));
 
         Log.info("Comments boot complete");

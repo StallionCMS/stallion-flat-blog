@@ -2,3 +2,13 @@
 
 }
 
+
+#main-column {
+    border: 1px solid #DDD;
+    border-radius: 4px;
+    padding: 0em 2em 2em 2em;
+}
+
+.page-header {
+
+}

@@ -53,23 +53,25 @@
         <div class="pure-u-1">
             <form id="st-update-comment-form" name="updateCommentForm" class="pure-form pure-form-stacked" onsubmit={submit}>
                 <fieldset>
-                    <div>
+                    <div class="pure-form-group">
                         <label for="email">Username</label>
-                        <textarea name="bodyMarkdown"></textarea>
+                        <textarea name="bodyMarkdown" class="pure-input-1" ></textarea>
                     </div>
-                    <div>
+                    <div class="pure-form-group">
                         <label for="authorDisplayName">Display Name</label>
-                        <input name="authorDisplayName" type="text">
+                        <input name="authorDisplayName" class="pure-input-1"  type="text">
                     </div>
-                    <div>
+                    <div class="pure-form-group">
                         <label for="authorEmail">Email</label>
-                        <input name="authorEmail" type="email">
+                        <input name="authorEmail" class="pure-input-1" type="email">
                     </div>
-                    <div>
+                    <div class="pure-form-group">
                         <label for="authorWebSite">Author Website</label>
-                        <input name="authorWebSite" type="text" placeholder="http://..." name="authorWebSite">
+                        <input name="authorWebSite" class="pure-input-1" type="text" placeholder="http://..." name="authorWebSite">
                     </div>
-                    <button type="submit" class="st-button-submit  pure-button pure-button-primary">Save changes</button>
+                    <div class="pure-form-group">
+                        <button type="submit" class="st-button-submit  pure-button pure-button-primary">Save changes</button>
+                    </div>
                 </fieldset>
             </form>        
         </div>
@@ -139,41 +141,40 @@
                 <th>
                     Comment
                 </th>
+                <th></th>
             </tr>
         </thead>
         <tbody if={loading}>
             <tr if={loading}>
-                <td colspan="5">Loading comments…</td>
+                <td colspan="8">Loading comments…</td>
             </tr>
         </tbody>
         <tbody if={!loading && comments.length === 0}>
             <tr>
-                <td colspan="5">No comments found</td>
+                <td colspan="8">No comments found</td>
             </tr>
         </tbody>
         <tbody each={comment in comments}>
             <tr>
                 <td class="button-actions">
-                    <span><a href="#/edit-comment/{comment.id}" class="pure-button">Edit</button></span>
-                    <span><button if={!comment.deleted} class="pure-button">Trash</button></span>
-                    <span><button if={!comment.approved} class="pure-button">Approve</button></span>
-                    <span><a target="_blank" href="{comment.permalink}">view</a></span>
+                    <span><a href="#/edit-comment/{comment.id}" class="pure-button">Edit</a></span>
+                    <span><a class="pure-button" target="_blank" href="{comment.permalink}">View</a></span>
                 </td>
                 <td>{comment.authorDisplayName}</td>
                 <td>{comment.authorEmail}</td>                
-                <td>{comment.state}</td>
+                <td>{comment.state.toLowerCase()}</td>
                 <td>{formatCreatedAt(comment.createdTicks)}</td>
                 <td>{comment.authorWebSite}</td>
                 <td>{comment.bodyMarkdown}</td>
-            </tr>
-            <tr>
-                <td colspan="6">
+                <td class="moderate-actions">
+                  <span><button if={!comment.approved} onclick={approve.bind(this, comment)} class="pure-button">Approve</button></span>
+                  <span><button if={!comment.deleted} onclick={reject.bind(this, comment)} class="pure-button">Trash</button></span>
                 </td>
             </tr>
         </tbody>
         <tfoot if={pager}>
             <tr>
-                <td colspan="6" if={pager.pageCount > 0}>
+                <td colspan="8" if={pager.pageCount > 0}>
                     <a class={pager-link-text: true, pager-link: true, current-page: page==1} href="#/1">First</a>
                     <a each={num in pager.surroundingPages} href="#/{num}" class={pager-link: true, current-page: num==page}>
                         {num}
@@ -182,8 +183,8 @@
                 </td>
             </tr>
             <tr>
-                <td colspan="5">
-                    <label><input type="checkbox" id="include-deleted" onclick={includeDeleted}> Show deleted comments?</label>
+                <td colspan="8">
+                    <label><input type="checkbox" id="include-deleted" checked={withDeleted === 'true'} onclick={includeDeleted}> Show deleted comments?</label>
                 </td>
             </tr>
         </tfoot>
@@ -194,7 +195,37 @@
      self.comments = [];
      self.loading = true;
      self.page = self.opts.page || 1;
-     self.withDeleted = 'false';
+     self.withDeleted = 'true';
+
+     reject(comment) {
+         console.log('reject', comment);
+         stallion.request({
+             url: '/_stx/flatBlog/comments/' + comment.id + '/delete',
+             method: 'POST',
+             success: function(cmt) {
+                 comment.approved = false;
+                 comment.deleted = true;
+                 comment.state = 'rejected';
+                 console.log('rejected');
+                 self.update();
+             }
+         });
+     }
+
+     approve(comment) {
+         stallion.request({
+             url: '/_stx/flatBlog/comments/' + comment.id + '/restore-and-approve',
+             method: 'POST',
+             success: function() {
+                 comment.approved = true;
+                 comment.deleted = false;
+                 comment.state = 'approved';
+                 console.log('approved');
+                 self.update();
+             }
+         });
+     }
+
 
      rowClick = function(evt) {
          var commentId = parseInt($(evt.target).parents('.comment-row').attr('data-comment-id'), 10);
@@ -215,6 +246,7 @@
      };
 
      this.fetchData = function() {
+         console.log("fetching data");
          stallion.request({
              url: '/_stx/flatBlog/comments/dashboard.json?page=' + self.page + '&deleted=' + self.withDeleted,
              success: function (o) {
@@ -222,6 +254,9 @@
                  self.comments = o.items;
                  self.loading = false;
                  self.update();
+             },
+             error: function(o, form, xhr) {
+                 console.log('error loading dashboard', o, xhr);
              }
          });
 

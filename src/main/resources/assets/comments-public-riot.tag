@@ -52,7 +52,8 @@ var stCommentThreadPage = new CommentThreadPage();
             </div>
         </div>
         <div class="st-actions">
-            <button class="btn btn-primary btn-xml pure-button pure-button-primary st-button-submit">Submit Comment</button>
+            <button if={!editMode} class="btn btn-primary btn-xml pure-button pure-button-primary st-button-submit">Submit Comment</button>
+            <button if={editMode} class="btn btn-primary btn-xml pure-button pure-button-primary st-button-submit">Update Comment</button>
             <a class="st-cancel-link" style="display:none; margin-left;" href="javascript:stallion_plugin_comments.cancelEditComment('{ commentThreadIdSlug }')">Cancel editing comment</a>
         </div>
         <p>&nbsp;</p>
@@ -135,8 +136,7 @@ var stCommentThreadPage = new CommentThreadPage();
              form: self.theCommentForm,
              success: function(comment) {
                  comment.editable = true;
-                 self.bodyMarkdown.value = '';
-                 self.update({fieldsShown: false});
+                 
                  if ($('.no-comments.no-comments').length) {
                      $('.no-comments.no-comments').css('display', "none");
                  }
@@ -155,11 +155,12 @@ var stCommentThreadPage = new CommentThreadPage();
                      storeToLocalStorage(data);
                      stFlatCommentsContext.newCommentsRiot.trigger('newComment', comment);
                  } else {
-                     debugger;
                      stFlatCommentsContext.riotTagByCommentId[comment.id].updateComment(comment);
                      //window.location.reload();
                  }
                  self.editMode = false;
+                 self.fieldsShown = false;
+                 self.updateData({bodyMarkdown: ''});
              },
              data: data
          });
@@ -262,7 +263,7 @@ var ST_COMMENT_CREATED_FORMAT = "mmmm d, yyyy h:mmtt";
     commented at {dateFormat(comment.createdTicks,ST_COMMENT_CREATED_FORMAT)}
                 </div>
                 <div class="st-comment-body"><raw name="rawBodyHtml" content="{ comment.bodyHtml }"/></div>
-                <div if={comment.editable && !comment.adminable}>
+                <div if={comment.editable && !comment.adminable}  class="moderation-actions">
                     <button class="edit-button" onclick="{ edit }">Edit</button>
                 </div>
                 <div if={comment.adminable} class="moderation-actions">

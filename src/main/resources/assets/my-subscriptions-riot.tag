@@ -12,7 +12,7 @@
 
 <my-subscriptions>
     <div if={contact}>
-        <h1>Subscriptions for {contact.email}</h1>
+        <h1 class="page-header">Subscriptions for {contact.email}</h1>
         <div if={!subscriptions.length}>
             <h4>You have no subscriptions</h4>
         </div>
@@ -35,7 +35,7 @@
                 </tr>
             </thead>
             <tbody each={subscription in subscriptions}>
-                <tr>
+                <tr class="subscription-row subscription-row-{subscription.id}" data-subscription-id="{subscription.id}">
                     <td>{subscription.name}</td>
                     <td>
                         <div if={subscription.enabled }>
@@ -53,8 +53,8 @@
                         { subscription.frequency}
                     </td>
                     <td>
-                        <button class="pure-button" if={subscription.enabled} onclick={unsub.bind(this, subscription)}>Unsubscribe</button>
-                        <button class="pure-button" if={!subscription.enabled} onclick={resub.bind(this, subscription)}>Re-enable</button>                        
+                        <button class="pure-button unsubscribe-button" if={subscription.enabled} onclick={unsub.bind(this, subscription)}>Unsubscribe</button>
+                        <button class="pure-button subscribe-button" if={!subscription.enabled} onclick={resub.bind(this, subscription)}>Re-enable</button>
                     </td>
                 </tr>
             </tbody>

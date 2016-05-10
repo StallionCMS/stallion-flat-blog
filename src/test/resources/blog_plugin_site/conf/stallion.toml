@@ -1,6 +1,7 @@
 
 siteName="The Simple Blog Site"
 siteUrl="http://localhost:8090"
+healthCheckSecret = "f4HuAiXZr17I"
 
 [email]
 host = "none"

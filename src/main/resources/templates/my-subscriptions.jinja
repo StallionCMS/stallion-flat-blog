@@ -1,8 +1,8 @@
-{% extends "stallion:admin/base-scaffold.jinja" %}
+{% extends "stallion:public/semipublic-base.jinja" %}
 {% block extra_head %}
 <link href="{{ assets.resource('my-subscriptions.css', 'flatBlog') }}" rel="stylesheet" />
 {% endblock %}
-{% block body_content %}
+{% block main_column %}
 <div id="st-comments-dashboard-content" class="container">
   <div class="row">
     <div class="col-md-2">
@@ -26,7 +26,7 @@
       contact: {{ contact }}
   }
 </script>
-<script src="{{ assets.resource('my-subscriptions-riot.tag.js?processor=riot', 'flatBlog') }}" type="text/javascript"></script>
+<script src="{{ assets.resource('my-subscriptions-riot.tag?processor=riot', 'flatBlog') }}" type="text/javascript"></script>
 <script type="text/javascript">
   $(document).ready(function() {
     riot.compile(function() {
