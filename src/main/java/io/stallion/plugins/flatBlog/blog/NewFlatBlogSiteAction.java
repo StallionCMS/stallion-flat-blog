@@ -80,7 +80,7 @@ public class NewFlatBlogSiteAction extends NewProjectBuilder {
         if (shouldMakeUser) {
             makeUser();
         }
-        System.out.printf("\n\nYour site is now complete! You can test it out by running >bin/stallion serve\n\n");
+        System.out.printf("\n\nYour site is now complete! You can test it out by using the 'serve' command.\n\n");
     }
 
     protected void makeBlogTemplates() throws IOException {
@@ -93,7 +93,7 @@ public class NewFlatBlogSiteAction extends NewProjectBuilder {
 
     protected void makeBlogConf() {
         builder = new FlatBlogSettingsBuilder();
-        builder.setRootUrl(or(Prompter.prompt("Choose a root URL for your main blog page: (default is '/') "), "/"));
+        builder.setRootUrl(or(new Prompter("Choose a root URL for your main blog page: (default is '/') ").setAllowEmpty(true).prompt(), "/"));
         builder.setCommentModeration(new Prompter("Enable comment moderation? ").yesNo());
         builder.build(getTargetFolder(), getTemplating());
     }

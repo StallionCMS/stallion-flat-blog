@@ -18,11 +18,11 @@ package io.stallion.plugins.flatBlog.contacts;
 
 import io.stallion.Context;
 import io.stallion.asyncTasks.AsyncCoordinator;
-import io.stallion.dal.DalRegistry;
-import io.stallion.dal.base.DalRegistration;
+import io.stallion.dataAccess.DataAccessRegistry;
+import io.stallion.dataAccess.DataAccessRegistration;
 
-import io.stallion.dal.base.StandardModelController;
-import io.stallion.dal.file.JsonFilePersister;
+import io.stallion.dataAccess.StandardModelController;
+import io.stallion.dataAccess.file.JsonFilePersister;
 import io.stallion.exceptions.UsageException;
 import io.stallion.services.Log;
 import io.stallion.settings.Settings;
@@ -52,7 +52,7 @@ public class NotificationController extends StandardModelController<Notification
         if (empty(notification.getCallbackPlugin())) {
             throw new UsageException("The notification instance must have a non-empty callbackPlugin");
         }
-        if (empty(notification.getFrequency())) {
+        if (emptyInstance(notification.getFrequency())) {
             throw new UsageException("The notification instance must have a non-empty frequency");
         }
         if (empty(notification.getContactId())) {
@@ -130,7 +130,7 @@ public class NotificationController extends StandardModelController<Notification
     }
 
     public static void register() {
-        DalRegistration registration = new DalRegistration()
+        DataAccessRegistration registration = new DataAccessRegistration()
                 .setModelClass(Notification.class)
                 .setControllerClass(NotificationController.class)
                 .setShouldWatch(false)
@@ -139,11 +139,11 @@ public class NotificationController extends StandardModelController<Notification
                 .setWritable(true)
                 .setPath("notifications")
                 .setPersisterClass(JsonFilePersister.class);
-        Context.dal().registerDal(registration);
+        Context.dal().register(registration);
     }
 
 
     public Long generateId(Notification obj) {
-        return DalRegistry.instance().getTickets().nextId();
+        return DataAccessRegistry.instance().getTickets().nextId();
     }
 }

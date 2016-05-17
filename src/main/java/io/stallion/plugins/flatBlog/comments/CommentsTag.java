@@ -20,8 +20,8 @@ import com.hubspot.jinjava.lib.tag.Tag;
 import com.hubspot.jinjava.tree.TagNode;
 import io.stallion.Context;
 import io.stallion.assets.AssetsController;
-import io.stallion.dal.base.Displayable;
-import io.stallion.dal.file.TextItem;
+import io.stallion.dataAccess.Displayable;
+import io.stallion.dataAccess.file.TextItem;
 import io.stallion.plugins.flatBlog.FlatBlogSettings;
 import io.stallion.services.Log;
 import io.stallion.templating.TemplateRenderer;
@@ -43,6 +43,7 @@ public class CommentsTag implements Tag {
             Context.getResponse().getPageFooterLiterals().addDefinedBundle("flatBlog:public.js");
 
 
+
             jinjavaInterpreter.enterScope();
             Map<String, Object> context = jinjavaInterpreter.getContext();
             TextItem post = (TextItem) context.get("post");
@@ -51,9 +52,12 @@ public class CommentsTag implements Tag {
             CommentThreadContext commentsContext = new CommentThreadContext();
             commentsContext
                     .setThreadId(post.getId())
+                    .setReCaptchaKey(FlatBlogSettings.getInstance().getReCaptchaSiteKey())
                     .setParentPermalink(post.getPermalink())
                     .setParentTitle(post.getTitle());
-
+            if (!empty(FlatBlogSettings.getInstance().getReCaptchaSiteKey())) {
+                Context.getResponse().getPageFooterLiterals().addJs("https://www.google.com/recaptcha/api.js?&render=explicit&onload=stCommentsOnLoadCaptcha");
+            }
             List<CommentWrapper> comments = list();
             for (Comment comment : CommentsController.instance()
                     .filterByKey("threadId", post.getId())
@@ -66,7 +70,7 @@ public class CommentsTag implements Tag {
             }
 
             context.put("commentsContext", commentsContext);
-            context.put("reCaptchaSiteKey", FlatBlogSettings.getInstance().getReCaptchaSiteKey());
+
 
             return TemplateRenderer.instance().renderTemplate("flatBlog:comments-section-for-post.jinja", context);
         } catch (RuntimeException e) {

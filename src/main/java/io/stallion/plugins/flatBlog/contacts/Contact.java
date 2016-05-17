@@ -16,9 +16,9 @@
 package io.stallion.plugins.flatBlog.contacts;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import io.stallion.dal.base.MappedModel;
-import io.stallion.dal.base.UniqueKey;
-import io.stallion.dal.file.ModelWithFilePath;
+import io.stallion.dataAccess.MappedModel;
+import io.stallion.dataAccess.UniqueKey;
+import io.stallion.dataAccess.file.ModelWithFilePath;
 import io.stallion.email.Contactable;
 import io.stallion.utils.GeneralUtils;
 import io.stallion.utils.json.RestrictedViews;

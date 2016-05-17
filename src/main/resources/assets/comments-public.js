@@ -7,9 +7,19 @@
     window.stallion_plugin_comments = plugin;
     window.st_flat_comments = plugin;
 
+    plugin.isInitialized = false;
     
     plugin.ready = function() {
         plugin.compileRiot();
+    };
+
+    window.stCommentsOnLoadCaptcha = function() {
+        console.log('onLoadCaptcha');
+        plugin.captchaLoaded = true;
+        if (plugin.isInitialized) {
+            stCommentForm.renderCaptcha();
+        }
+
     };
 
     plugin.compileRiot = function() {
@@ -50,6 +60,7 @@
                 }
             }, 200);
             plugin.performQueryActions();
+            plugin.isInitialized = true;            
         });
         
     };

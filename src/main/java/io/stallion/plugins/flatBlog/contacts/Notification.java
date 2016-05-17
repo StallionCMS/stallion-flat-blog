@@ -15,9 +15,9 @@
 
 package io.stallion.plugins.flatBlog.contacts;
 
-import io.stallion.dal.base.AlternativeKey;
-import io.stallion.dal.base.MappedModel;
-import io.stallion.dal.base.UniqueKey;
+import io.stallion.dataAccess.AlternativeKey;
+import io.stallion.dataAccess.MappedModel;
+import io.stallion.dataAccess.UniqueKey;
 import io.stallion.utils.json.JSON;
 
 

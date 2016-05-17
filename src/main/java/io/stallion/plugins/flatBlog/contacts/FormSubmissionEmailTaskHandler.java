@@ -17,7 +17,7 @@ package io.stallion.plugins.flatBlog.contacts;
 
 import io.stallion.asyncTasks.AsyncCoordinator;
 import io.stallion.asyncTasks.AsyncTaskHandlerBase;
-import io.stallion.dal.base.Model;
+import io.stallion.dataAccess.Model;
 import io.stallion.plugins.flatBlog.FlatBlogSettings;
 import io.stallion.services.Log;
 import io.stallion.settings.Settings;

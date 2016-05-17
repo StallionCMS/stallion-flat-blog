@@ -16,9 +16,9 @@
 package io.stallion.plugins.flatBlog.blog;
 
 import io.stallion.Context;
-import io.stallion.dal.file.TextItem;
-import io.stallion.dal.filtering.FilterChain;
-import io.stallion.dal.filtering.Pager;
+import io.stallion.dataAccess.file.TextItem;
+import io.stallion.dataAccess.filtering.FilterChain;
+import io.stallion.dataAccess.filtering.Pager;
 import io.stallion.plugins.flatBlog.settings.BlogConfig;
 import io.stallion.restfulEndpoints.EndpointResource;
 import io.stallion.settings.Settings;
@@ -79,7 +79,7 @@ public class Endpoints implements EndpointResource {
     }
 
     @GET
-    @Path("/page/:page")
+    @Path("/page/:page/")
     @Produces("text/html")
     public String listHome(@PathParam("page") Integer page) throws Exception {
         Map<String, Object> context = makeContext();
@@ -125,7 +125,7 @@ public class Endpoints implements EndpointResource {
 
 
     @GET
-    @Path("/archives/:year/:month")
+    @Path("/archives/:year/:month/")
     public String listByDate(@PathParam("year") String year, @PathParam("month") String month) throws Exception {
         Map<String, Object> context = makeContext();
         Pager pager = filterChain()
@@ -139,7 +139,7 @@ public class Endpoints implements EndpointResource {
     }
 
     @GET
-    @Path("/by-tag/:tag")
+    @Path("/by-tag/:tag/")
     @Produces("text/html")
     public String listByTag(@PathParam("tag") String tag) throws Exception {
         Map<String, Object> context = makeContext();

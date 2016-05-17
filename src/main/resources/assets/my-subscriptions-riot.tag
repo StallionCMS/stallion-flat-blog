@@ -10,6 +10,8 @@
 
    //</script>
 
+var BASIC_DATE_FORMAT = 'mmm d, yyyy';
+
 <my-subscriptions>
     <div if={contact}>
         <h1 class="page-header">Subscriptions for {contact.email}</h1>
@@ -39,10 +41,10 @@
                     <td>{subscription.name}</td>
                     <td>
                         <div if={subscription.enabled }>
-                            <small>Subscribed&nbsp;on</small><br/>{new Date(subscription.optInDate||subscription.createdAt).format("mmm d, yyyy")}
+                            <small>Subscribed&nbsp;on</small><br/>{dateFormat(subscription.optInDate||subscription.createdAt, BASIC_DATE_FORMAT)}
                         </div>
                         <div if={!subscription.enabled && subscription.optOutDate}>
-                            <small>Opted&nbsp;out&nbsp;on</small><br/>{new Date(subscription.optOutDate).format("mmm d, yyyy")}
+                            <small>Opted&nbsp;out&nbsp;on</small><br/>{dateFormat(subscription.optOutDate, BASIC_DATE_FORMAT)}
                         </div>
                     </td>
                     <td>

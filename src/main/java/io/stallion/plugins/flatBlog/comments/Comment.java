@@ -20,9 +20,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.stallion.Context;
-import io.stallion.dal.DalRegistry;
-import io.stallion.dal.base.*;
-import io.stallion.dal.file.ModelWithFilePath;
+import io.stallion.dataAccess.DataAccessRegistry;
+import io.stallion.dataAccess.*;
+import io.stallion.dataAccess.file.ModelWithFilePath;
 import io.stallion.plugins.flatBlog.FlatBlogSettings;
 import io.stallion.users.Role;
 import io.stallion.utils.DateUtils;
@@ -345,7 +345,7 @@ public class Comment extends ModelBase implements ModelWithFilePath {
 
     public String generateFilePath() {
         if (empty(getId())) {
-            setId(DalRegistry.instance().getTickets().nextId());
+            setId(DataAccessRegistry.instance().getTickets().nextId());
         }
         String threadId = getThreadId().toString();
         if (threadId.contains(".")) {

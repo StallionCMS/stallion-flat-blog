@@ -17,11 +17,11 @@ package io.stallion.plugins.flatBlog.contacts;
 
 
 import io.stallion.Context;
-import io.stallion.dal.DalRegistry;
-import io.stallion.dal.base.DalRegistration;
+import io.stallion.dataAccess.DataAccessRegistry;
+import io.stallion.dataAccess.DataAccessRegistration;
 
-import io.stallion.dal.base.StandardModelController;
-import io.stallion.dal.file.JsonFilePersister;
+import io.stallion.dataAccess.StandardModelController;
+import io.stallion.dataAccess.file.JsonFilePersister;
 import io.stallion.utils.GeneralUtils;
 
 import static io.stallion.utils.Literals.*;
@@ -53,7 +53,7 @@ public class ContactsController extends StandardModelController<Contact>{
 
 
     public static void register() {
-        DalRegistration registration = new DalRegistration()
+        DataAccessRegistration registration = new DataAccessRegistration()
                 .setModelClass(Contact.class)
                 .setControllerClass(ContactsController.class)
                 .setShouldWatch(false)
@@ -62,11 +62,11 @@ public class ContactsController extends StandardModelController<Contact>{
                 .setWritable(true)
                 .setPath("contacts")
                 .setPersisterClass(JsonFilePersister.class);
-        Context.dal().registerDal(registration);
+        Context.dal().register(registration);
     }
 
 
     public Long generateId(Contact obj) {
-        return DalRegistry.instance().getTickets().nextId();
+        return DataAccessRegistry.instance().getTickets().nextId();
     }
 }

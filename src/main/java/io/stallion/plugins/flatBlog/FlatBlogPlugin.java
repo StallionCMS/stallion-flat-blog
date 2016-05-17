@@ -19,8 +19,8 @@ import io.stallion.Context;
 import io.stallion.assets.BundleFile;
 import io.stallion.assets.DefinedBundle;
 import io.stallion.boot.StallionRunAction;
-import io.stallion.dal.base.DalRegistration;
-import io.stallion.dal.file.TextFilePersister;
+import io.stallion.dataAccess.DataAccessRegistration;
+import io.stallion.dataAccess.file.TextFilePersister;
 import io.stallion.hooks.HookRegistry;
 import io.stallion.plugins.StallionJavaPlugin;
 import io.stallion.plugins.flatBlog.blog.*;
@@ -36,6 +36,7 @@ import io.stallion.services.Log;
 import io.stallion.settings.Settings;
 import io.stallion.settings.TargetFolder;
 import io.stallion.templating.TemplateRenderer;
+import io.stallion.tools.ExporterRegistry;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
@@ -81,7 +82,7 @@ public class FlatBlogPlugin extends StallionJavaPlugin {
 
             SiteMapController.instance().addItem(new SiteMapItem().setPermalink(Settings.instance().getSiteUrl() + rootUrl));
             config.setBucket(config.getFolder());
-            DalRegistration registration = new DalRegistration()
+            DataAccessRegistration registration = new DataAccessRegistration()
                     .setModelClass(BlogPost.class)
                     .setControllerClass(BlogPostController.class)
                     .setPath(config.getFolder())
@@ -90,10 +91,11 @@ public class FlatBlogPlugin extends StallionJavaPlugin {
                     .setPersisterClass(TextFilePersister.class)
                     .setTemplatePath(config.getPostTemplate())
                     .setWritable(false);
-            Context.dal().registerDal(registration);
+            Context.dal().register(registration);
 
         }
 
+        ExporterRegistry.instance().register(new BlogExporter());
     }
 
     public void bootContacts() throws Exception {

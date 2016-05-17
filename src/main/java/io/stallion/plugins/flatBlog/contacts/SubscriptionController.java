@@ -18,12 +18,12 @@ package io.stallion.plugins.flatBlog.contacts;
 
 import io.stallion.Context;
 import io.stallion.asyncTasks.AsyncCoordinator;
-import io.stallion.dal.DalRegistry;
-import io.stallion.dal.base.DalRegistration;
+import io.stallion.dataAccess.DataAccessRegistry;
+import io.stallion.dataAccess.DataAccessRegistration;
 
-import io.stallion.dal.base.StandardModelController;
+import io.stallion.dataAccess.StandardModelController;
 
-import io.stallion.dal.file.JsonFilePersister;
+import io.stallion.dataAccess.file.JsonFilePersister;
 import io.stallion.plugins.flatBlog.FlatBlogSettings;
 import io.stallion.services.Log;
 import io.stallion.utils.DateUtils;
@@ -40,7 +40,7 @@ public class SubscriptionController extends StandardModelController<Subscription
 
     public Subscription unsubscribe(Contact contact, Long subscriptionId) {
         Subscription subscription = SubscriptionController.instance().forId(subscriptionId);
-        if (empty(subscription)) {
+        if (emptyInstance(subscription)) {
             return subscription;
         }
         subscription.setOptOutDate(DateUtils.mils());
@@ -51,7 +51,7 @@ public class SubscriptionController extends StandardModelController<Subscription
 
     public Subscription resubscribe(Contact contact, Long subscriptionId) {
         Subscription subscription = SubscriptionController.instance().forId(subscriptionId);
-        if (empty(subscription)) {
+        if (emptyInstance(subscription)) {
             return subscription;
         }
         subscription.setOptOutDate(null);
@@ -114,7 +114,7 @@ public class SubscriptionController extends StandardModelController<Subscription
     }
 
     public static void register() {
-        DalRegistration registration = new DalRegistration()
+        DataAccessRegistration registration = new DataAccessRegistration()
                 .setModelClass(Subscription.class)
                 .setControllerClass(SubscriptionController.class)
                 .setShouldWatch(false)
@@ -123,11 +123,11 @@ public class SubscriptionController extends StandardModelController<Subscription
                 .setWritable(true)
                 .setPath("subscriptions")
                 .setPersisterClass(JsonFilePersister.class);
-        Context.dal().registerDal(registration);
+        Context.dal().register(registration);
     }
 
 
     public  Long generateId(Subscription obj) {
-        return DalRegistry.instance().getTickets().nextId();
+        return DataAccessRegistry.instance().getTickets().nextId();
     }
 }

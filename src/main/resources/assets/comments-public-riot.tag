@@ -28,7 +28,7 @@ var stCommentThreadPage = new CommentThreadPage();
         </div>
         <div class="form-group st-field" if={fieldsShown}>
             <label>Your name</label>
-            <input class="form-control st-control"  type="text" name="authorDisplayName" placeholder="Jamie Doe">
+            <input class="form-control st-control"  type="text" name="authorDisplayName" placeholder="Jamie Doe" required="true">
         </div>
         <div class="form-group st-field" if={fieldsShown}>
             <label>Your email address (will be kept private)</label>
@@ -38,9 +38,9 @@ var stCommentThreadPage = new CommentThreadPage();
             <label>Your website (optional)</label>
             <input class="form-control st-control" type="text" name="authorWebSite" placeholder="http://myblog.com">
         </div>
-        <div class="hide-on-edit" if={reCaptchaSiteKey && fieldsShown}>
-            <div class="recaptcha-wrapper form-group st-field hidden-at-first">
-                <div class="g-recaptcha" data-sitekey="{ reCaptchaSiteKey }"></div>
+        <div if={reCaptchaSiteKey && fieldsShown && !editMode}>
+            <div class="recaptcha-wrapper form-group st-field">
+                <div class="g-recaptcha" name="recaptchaDiv"></div>
             </div>
         </div>
         <div class="" if={fieldsShown && !editMode}>
@@ -62,6 +62,7 @@ var stCommentThreadPage = new CommentThreadPage();
     <script>
      this.mixin('databind');
      var self = this;
+     reCaptchaSiteKey = stFlatCommentsContext.reCaptchaKey;
      fieldsShown = false;
      editMode = false;
      //authorWebSite = '';
@@ -73,7 +74,7 @@ var stCommentThreadPage = new CommentThreadPage();
      editingCommentId = 0;
      parentId = null;
      data = {};
-
+     self.captchaWidgetId = null;
      
 
      cancelEdit = function() {
@@ -91,7 +92,6 @@ var stCommentThreadPage = new CommentThreadPage();
          self.editMode = true;
          self.fieldsShown = true;
          editingCommentId = comment.id;
-         //console.log(self.authorEmail);
          self.updateData({
              authorEmail: comment.authorEmail,
              bodyMarkdown: comment.bodyMarkdown,
@@ -114,7 +114,6 @@ var stCommentThreadPage = new CommentThreadPage();
      onSubmit = function(event, b, c) {
          event.preventDefault(event);
          var form = this;
-         console.log('handleSubmit! ', this, event, b, c);
          var data = self.getFormData();
          data.threadId = self.opts.threadId;
          if (parentId !== null) {
@@ -122,14 +121,16 @@ var stCommentThreadPage = new CommentThreadPage();
          }
          data.parentPermalink = self.opts.parentPermalink;
          data.parentTitle = self.opts.parentTitle;
-         console.log('data', data);
          var url = '/_stx/flatBlog/comments/submit';
          var isEdit = false;
          if (editingCommentId) {
              url = '/_stx/flatBlog/comments/' + editingCommentId + '/revise';
              isEdit = true;
          }
-         data.captchaResponse = data['g-recaptcha-response'];
+         if (self.captchaWidgetId != null) {
+             data.captchaResponse = grecaptcha.getResponse(self.captchaWidgetId);
+         }
+
          stallion.request({
              url: url,
              method: 'post',
@@ -189,20 +190,30 @@ var stCommentThreadPage = new CommentThreadPage();
             toStore[fieldName] = data[fieldName];
         });
         localStorage.stCommenterInfo = JSON.stringify(toStore);
-        console.log("Stored to local storage: " + localStorage.stCommenterInfo);
+     };
+
+     self.captchaRendered = false;
+     this.renderCaptcha = function() {
+         if (reCaptchaSiteKey && st_flat_comments.captchaLoaded && !self.captchaRendered) {
+             self.captchaRendered = true;
+             self.captchaWidgetId = grecaptcha.render(
+                 self.recaptchaDiv,
+                 {"sitekey": reCaptchaSiteKey,
+                  "theme": "light"
+                 });
+         }
      };
 
      this.on('mount', function() {
+         self.renderCaptcha();
          stallion.autoGrow({}, $(this.root).find('textarea'));
          $(this.root).find('textarea').textcomplete([{
              match: /(^|\s)@(\w*)$/,
              search: function (term, callback) {
-                 console.log('search!', term);
                  term = term || "";
                  term = term.toLowerCase();
                  var words = [];
                  stFlatCommentsContext.comments.forEach(function(comment) {
-                     console.log('push', comment);
                      words.push(comment.authorDisplayName);
                  });
                  callback($.map(words, function (word) {
@@ -234,12 +245,10 @@ var stCommentThreadPage = new CommentThreadPage();
     this.comments = [];
     this.items = ['one'];
     this.numberOfItems = 0;
-                      console.log('comments', this.comments);
+
     this.on('newComment', function(newComment) {
-        console.log('newComment!', newComment);
         this.comments.push(newComment);
         self.update();
-        
     })
 
   </script>
@@ -268,7 +277,7 @@ var ST_COMMENT_CREATED_FORMAT = "mmmm d, yyyy h:mmtt";
                 </div>
                 <div if={comment.adminable} class="moderation-actions">
                     <button class="edit-button" onclick="{ edit }">Edit</button>
-                    <button class="trash-button" onclick="{ reject }">Trash</button>
+                    <button class="trash-button" if={comment.approved} onclick="{ reject }">Trash</button>
                     <button class="approve-button" if={!comment.approved} onclick="{ approve }">Approve</button>
                 </div>
             </div>
@@ -298,7 +307,6 @@ var ST_COMMENT_CREATED_FORMAT = "mmmm d, yyyy h:mmtt";
              success: function() {
                  self.comment.approved = false;
                  $(self.root).find('.st-comment-label').addClass('st-comment-rejected').removeClass('st-comment-pending').removeClass('st-comment-approved');
-                 console.log('rejected');
                  self.update();
              }
          });
@@ -311,7 +319,6 @@ var ST_COMMENT_CREATED_FORMAT = "mmmm d, yyyy h:mmtt";
              success: function() {
                  self.comment.approved = true;
                  $(self.root).find('.st-comment-label').addClass('st-comment-approved').removeClass('st-comment-pending').removeClass('st-comment-rejected');
-                 console.log('approved');
                  self.update();
              }
          });

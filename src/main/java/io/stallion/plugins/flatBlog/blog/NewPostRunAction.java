@@ -18,8 +18,8 @@ package io.stallion.plugins.flatBlog.blog;
 import io.stallion.boot.AppContextLoader;
 import io.stallion.boot.CommandOptionsBase;
 import io.stallion.boot.StallionRunAction;
-import io.stallion.dal.DalRegistry;
-import io.stallion.dal.file.TextFilePersister;
+import io.stallion.dataAccess.DataAccessRegistry;
+import io.stallion.dataAccess.file.TextFilePersister;
 import io.stallion.plugins.flatBlog.FlatBlogSettings;
 import io.stallion.plugins.flatBlog.settings.BlogConfig;
 import io.stallion.settings.Settings;
@@ -58,13 +58,13 @@ public class NewPostRunAction implements StallionRunAction<CommandOptionsBase> {
 
         String postContent = new SimpleTemplate(postTemplate)
                 .put("publishDate", "2099-01-01 11:15:00 America/New_York")
-                .put("id", DalRegistry.instance().getTickets().nextId())
+                .put("id", DataAccessRegistry.instance().getTickets().nextId())
                 .put("slug", slug)
                 .put("title", title)
                 .put("siteUrl", Settings.instance().getSiteUrl())
                 .put("previewKey", GeneralUtils.randomToken(8))
                 .render();
-        String blogFolderPath = ((TextFilePersister)DalRegistry.instance().get(blog.getFolder()).getPersister()).getBucketFolderPath();
+        String blogFolderPath = ((TextFilePersister)DataAccessRegistry.instance().get(blog.getFolder()).getPersister()).getBucketFolderPath();
         String fileName =  blogFolderPath + "/" + DateUtils.formatNow("yyyy-MM-dd") + "-" + GeneralUtils.slugify(title) + ".txt";
         File file = new File(fileName);
         FileUtils.write(file, postContent, "UTF-8");

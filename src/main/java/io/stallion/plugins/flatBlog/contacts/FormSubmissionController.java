@@ -16,11 +16,11 @@
 package io.stallion.plugins.flatBlog.contacts;
 
 import io.stallion.Context;
-import io.stallion.dal.base.DalRegistration;
+import io.stallion.dataAccess.DataAccessRegistration;
 
-import io.stallion.dal.base.StandardModelController;
+import io.stallion.dataAccess.StandardModelController;
 
-import io.stallion.dal.file.JsonFilePersister;
+import io.stallion.dataAccess.file.JsonFilePersister;
 
 
 public class FormSubmissionController extends StandardModelController<FormSubmission>{
@@ -32,7 +32,7 @@ public class FormSubmissionController extends StandardModelController<FormSubmis
 
 
     public static void register() {
-        DalRegistration registration = new DalRegistration()
+        DataAccessRegistration registration = new DataAccessRegistration()
                 .setModelClass(FormSubmission.class)
                 .setControllerClass(FormSubmissionController.class)
                 .setShouldWatch(false)
@@ -41,7 +41,7 @@ public class FormSubmissionController extends StandardModelController<FormSubmis
                 .setWritable(true)
                 .setPath("form_submissions")
                 .setPersisterClass(JsonFilePersister.class);
-        Context.dal().registerDal(registration);
+        Context.dal().register(registration);
     }
 
 

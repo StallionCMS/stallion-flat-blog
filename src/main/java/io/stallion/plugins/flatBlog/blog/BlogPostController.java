@@ -15,12 +15,12 @@
 
 package io.stallion.plugins.flatBlog.blog;
 
-import io.stallion.dal.file.TextItem;
-import io.stallion.dal.file.TextItemController;
-import io.stallion.dal.filtering.FilterChain;
+import io.stallion.dataAccess.file.TextItem;
+import io.stallion.dataAccess.file.TextItemController;
+import io.stallion.dataAccess.filtering.FilterChain;
 import io.stallion.plugins.flatBlog.settings.BlogConfig;
 
-public class BlogPostController<T extends TextItem> extends TextItemController {
+public class BlogPostController extends TextItemController<BlogPost> {
 
     public FilterChain<BlogPost> filterForConfig(BlogConfig config) throws Exception {
         return this.filterChain();

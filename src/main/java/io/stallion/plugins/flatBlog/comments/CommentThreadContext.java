@@ -29,6 +29,7 @@ public class CommentThreadContext {
     private List<CommentWrapper> comments = list();
     private Map<String, Object> commentById = map();
     private Map<String, Object> riotTagByCommentId = map();
+    private String reCaptchaKey = "";
 
 
     public Long getThreadId() {
@@ -82,6 +83,15 @@ public class CommentThreadContext {
 
     public CommentThreadContext setRiotTagByCommentId(Map<String, Object> riotTagByCommentId) {
         this.riotTagByCommentId = riotTagByCommentId;
+        return this;
+    }
+
+    public String getReCaptchaKey() {
+        return reCaptchaKey;
+    }
+
+    public CommentThreadContext setReCaptchaKey(String reCaptchaKey) {
+        this.reCaptchaKey = reCaptchaKey;
         return this;
     }
 }

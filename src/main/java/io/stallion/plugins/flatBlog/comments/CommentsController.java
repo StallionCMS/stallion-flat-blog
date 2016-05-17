@@ -16,8 +16,8 @@
 package io.stallion.plugins.flatBlog.comments;
 
 import io.stallion.Context;
-import io.stallion.dal.base.*;
-import io.stallion.dal.file.JsonFilePersister;
+import io.stallion.dataAccess.*;
+import io.stallion.dataAccess.file.JsonFilePersister;
 import io.stallion.exceptions.NotFoundException;
 import io.stallion.plugins.flatBlog.contacts.*;
 import io.stallion.services.Log;
@@ -282,7 +282,7 @@ public class CommentsController extends StandardModelController<Comment> {
     }
 
     public static void register() {
-        DalRegistration registration = new DalRegistration()
+        DataAccessRegistration registration = new DataAccessRegistration()
                 .setModelClass(Comment.class)
                 .setControllerClass(CommentsController.class)
                 .setShouldWatch(false)
@@ -291,7 +291,7 @@ public class CommentsController extends StandardModelController<Comment> {
                 .setWritable(true)
                 .setPath("comments")
                 .setPersisterClass(JsonFilePersister.class);
-        Context.dal().registerDal(registration);
+        Context.dal().register(registration);
     }
 
 

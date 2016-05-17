@@ -15,10 +15,10 @@
 
 package io.stallion.plugins.flatBlog.contacts;
 
-import io.stallion.dal.base.AlternativeKey;
-import io.stallion.dal.base.ModelBase;
+import io.stallion.dataAccess.AlternativeKey;
+import io.stallion.dataAccess.ModelBase;
 
-import io.stallion.dal.file.ModelWithFilePath;
+import io.stallion.dataAccess.file.ModelWithFilePath;
 import io.stallion.utils.DateUtils;
 import io.stallion.utils.GeneralUtils;
 

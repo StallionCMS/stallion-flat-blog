@@ -16,7 +16,7 @@
 package io.stallion.plugins.flatBlog.blog;
 
 import io.stallion.Context;
-import io.stallion.dal.file.TextItem;
+import io.stallion.dataAccess.file.TextItem;
 import io.stallion.services.Log;
 
 import java.time.format.DateTimeFormatter;

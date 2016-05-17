@@ -27,8 +27,8 @@ import static io.stallion.utils.Literals.*;
 
 import com.mashape.unirest.http.exceptions.UnirestException;
 import io.stallion.Context;
-import io.stallion.dal.filtering.FilterChain;
-import io.stallion.dal.filtering.Pager;
+import io.stallion.dataAccess.filtering.FilterChain;
+import io.stallion.dataAccess.filtering.Pager;
 import io.stallion.exceptions.*;
 import io.stallion.exceptions.NotFoundException;
 import io.stallion.plugins.flatBlog.contacts.Contact;

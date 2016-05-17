@@ -5,7 +5,7 @@ import io.stallion.asyncTasks.AsyncCoordinator;
 import io.stallion.asyncTasks.AsyncTask;
 import io.stallion.asyncTasks.AsyncTaskController;
 import io.stallion.asyncTasks.AsyncTaskExecuteRunnable;
-import io.stallion.dal.DalRegistry;
+import io.stallion.dataAccess.DataAccessRegistry;
 import io.stallion.email.EmailSender;
 import io.stallion.plugins.PluginRegistry;
 import io.stallion.plugins.flatBlog.comments.CommentsEndpoints;
@@ -50,7 +50,7 @@ public class TestCommentNotifications extends AppIntegrationCaseBase {
         Stubbing.stub(NewCommentEmailHandler.class, "enqueue");
 
 
-        parentId = DalRegistry.instance().getTickets().nextId();
+        parentId = DataAccessRegistry.instance().getTickets().nextId();
 
 
 
@@ -307,7 +307,7 @@ public class TestCommentNotifications extends AppIntegrationCaseBase {
 
         List<Comment> comments = list(one, two, three, four, five, threeAgain, six, seven);
 
-        Long parentId = DalRegistry.instance().getTickets().nextId();
+        Long parentId = DataAccessRegistry.instance().getTickets().nextId();
         for (Comment cmt: comments) {
             cmt.setParentTitle("Test Post");
             cmt.setThreadId(parentId);

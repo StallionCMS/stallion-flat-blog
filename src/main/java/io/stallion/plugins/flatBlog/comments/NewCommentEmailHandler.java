@@ -17,9 +17,10 @@ package io.stallion.plugins.flatBlog.comments;
 
 import io.stallion.asyncTasks.AsyncCoordinator;
 import io.stallion.asyncTasks.AsyncTaskHandlerBase;
-import io.stallion.dal.base.Model;
+import io.stallion.dataAccess.Model;
 import io.stallion.plugins.flatBlog.FlatBlogSettings;
 import io.stallion.services.Log;
+import io.stallion.settings.Settings;
 import io.stallion.testing.Stubbing;
 import io.stallion.users.User;
 import io.stallion.users.UserController;
@@ -45,9 +46,16 @@ public class NewCommentEmailHandler extends AsyncTaskHandlerBase {
 
     public void process() {
         Comment comment = CommentsController.instance().forIdOrNotFound(commentId);
-        List<User> moderators = list();
-        Log.info("Mail comment to moderators commentId={0} moderators={1}", commentId, FlatBlogSettings.getInstance().getModeratorEmails());
-        for(String email: FlatBlogSettings.getInstance().getModeratorEmails()) {
+        List<String> moderatorEmails = FlatBlogSettings.getInstance().getModeratorEmails();
+        if (empty(moderatorEmails)) {
+            moderatorEmails = FlatBlogSettings.getInstance().getNotifyEmails();
+        }
+        if (empty(moderatorEmails)) {
+            moderatorEmails = Settings.instance().getEmail().getAdminEmails();
+        }
+
+        Log.info("Mail comment to moderators commentId={0} moderators={1}", commentId, moderatorEmails);
+        for(String email: moderatorEmails) {
             Model m = null;
             if (UserController.instance() != null) {
                 m = UserController.instance().forUniqueKey("email", email);

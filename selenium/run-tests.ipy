@@ -1,6 +1,7 @@
 #!/usr/local/bin/ipython
 
 import os
+import sys
 import subprocess
 import time
 
@@ -12,12 +13,15 @@ print 'In directory ', os.getcwd()
 
 p = subprocess.Popen(['mvn', 'compile', 'exec:java', '-Dexec.mainClass=io.stallion.plugins.flatBlog.MainRunner', '-Dexec.args=serve -autoReload -targetPath=' + app_dir + ' -logLevel=FINER  -devMode=true -env=local -localMode=true'])
 
-time.sleep(5)
 
-!node selenium/test-blog.js
 
-#p.terminate()
+args = ' '. join(sys.argv[1:])
+
+!selenium-nashorn $proj_dir/selenium/test-blog.js $args
+
+p.terminate()
 p.wait()
+
 
 
 
