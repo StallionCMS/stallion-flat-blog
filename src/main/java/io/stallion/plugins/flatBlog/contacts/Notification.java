@@ -17,11 +17,12 @@ package io.stallion.plugins.flatBlog.contacts;
 
 import io.stallion.dataAccess.AlternativeKey;
 import io.stallion.dataAccess.MappedModel;
+import io.stallion.dataAccess.MappedModelBase;
 import io.stallion.dataAccess.UniqueKey;
 import io.stallion.utils.json.JSON;
 
 
-public class Notification extends MappedModel {
+public class Notification extends MappedModelBase {
     private String key;
     private Long contactId;
     private String subscriptionId;

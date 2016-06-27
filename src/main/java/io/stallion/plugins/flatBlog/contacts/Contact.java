@@ -17,6 +17,7 @@ package io.stallion.plugins.flatBlog.contacts;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import io.stallion.dataAccess.MappedModel;
+import io.stallion.dataAccess.MappedModelBase;
 import io.stallion.dataAccess.UniqueKey;
 import io.stallion.dataAccess.file.ModelWithFilePath;
 import io.stallion.email.Contactable;
@@ -28,7 +29,7 @@ import java.util.Set;
 import static io.stallion.utils.Literals.set;
 
 
-public class Contact extends MappedModel implements ModelWithFilePath, Contactable {
+public class Contact extends MappedModelBase implements ModelWithFilePath, Contactable {
     private String givenName = "";
     private String familyName = "";
     private String email = "";
